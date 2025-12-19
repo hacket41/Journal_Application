@@ -1,4 +1,9 @@
 ﻿@page "/today"
+@inject IJournalService JournalService
+@inject NavigationManager Navigation
+@using Journal.Models
+@using Journal.Services
+@using Microsoft.AspNetCore.Components.Web
 
 <PageTitle>Today's Entry</PageTitle>
 
@@ -8,443 +13,233 @@
         <p class="date">@DateTime.Now.ToString("dddd, MMMM dd, yyyy")</p>
     </div>
 
-    <div class="entry-form">
-        <div class="form-group">
-            <label>Title (Optional)</label>
-            <input type="text" class="form-control" placeholder="Give your entry a title..." />
-        </div>
+    @if (isLoading)
+    {
+        <div class="loading">Loading entry...</div>
+    }
+    else
+    {
+        <div class="entry-form">
+            <div class="form-group">
+                <label>Title (Optional)</label>
+                <input type="text" class="form-control"
+                       @bind="entry.Title"
+                       placeholder="Give your entry a title..." />
+            </div>
 
-        <div class="mood-section">
-            <h3>How are you feeling today?</h3>
+            <div class="mood-section">
+                <h3>How are you feeling today?</h3>
 
-            <div class="mood-group">
-                <label class="mood-label">Primary Mood (Required)</label>
-                <div class="mood-grid">
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="happy" />
-                        <label for="happy">😊 Happy</label>
+                <div class="mood-group">
+                    <label class="mood-label">Primary Mood (Required)</label>
+                    <div class="mood-grid">
+                        @foreach (var mood in PrimaryMoods)
+                        {
+                            <div class="mood-option">
+                                <input type="radio"
+                                       name="primary-mood"
+                                       id="primary-@mood.Value"
+                                       @onchange="() => SetPrimaryMood(mood.Value)"
+                                       checked="@(entry.PrimaryMood == mood.Value)" />
+                                <label for="primary-@mood.Value">@mood.Text</label>
+                            </div>
+                        }
                     </div>
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="excited" />
-                        <label for="excited">🤗 Excited</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="relaxed" />
-                        <label for="relaxed">😌 Relaxed</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="grateful" />
-                        <label for="grateful">🙏 Grateful</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="confident" />
-                        <label for="confident">💪 Confident</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="calm" />
-                        <label for="calm">🧘 Calm</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="thoughtful" />
-                        <label for="thoughtful">🤔 Thoughtful</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="curious" />
-                        <label for="curious">🧐 Curious</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="nostalgic" />
-                        <label for="nostalgic">🥺 Nostalgic</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="bored" />
-                        <label for="bored">😐 Bored</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="sad" />
-                        <label for="sad">😢 Sad</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="angry" />
-                        <label for="angry">😠 Angry</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="stressed" />
-                        <label for="stressed">😰 Stressed</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="lonely" />
-                        <label for="lonely">😔 Lonely</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="radio" name="primary-mood" id="anxious" />
-                        <label for="anxious">😟 Anxious</label>
+                </div>
+
+                <div class="mood-group">
+                    <label class="mood-label">Secondary Moods (Optional - Up to 2)</label>
+                    <div class="mood-grid">
+                        @foreach (var mood in SecondaryMoods)
+                        {
+                            <div class="mood-option">
+                                <input type="checkbox"
+                                       id="sec-@mood.Value"
+                                       @onchange="() => ToggleSecondaryMood(mood.Value)"
+                                       checked="@(entry.SecondaryMoods?.Split(',').Contains(mood.Value) == true)" />
+                                <label for="sec-@mood.Value">@mood.Text</label>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
 
-            <div class="mood-group">
-                <label class="mood-label">Secondary Moods (Optional - Up to 2)</label>
-                <div class="mood-grid">
-                    <div class="mood-option">
-                        <input type="checkbox" name="secondary-mood" id="sec-happy" />
-                        <label for="sec-happy">😊 Happy</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="checkbox" name="secondary-mood" id="sec-excited" />
-                        <label for="sec-excited">🤗 Excited</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="checkbox" name="secondary-mood" id="sec-relaxed" />
-                        <label for="sec-relaxed">😌 Relaxed</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="checkbox" name="secondary-mood" id="sec-stressed" />
-                        <label for="sec-stressed">😰 Stressed</label>
-                    </div>
-                    <div class="mood-option">
-                        <input type="checkbox" name="secondary-mood" id="sec-anxious" />
-                        <label for="sec-anxious">😟 Anxious</label>
+            <div class="form-group">
+                <label>Category (Optional)</label>
+                <select class="form-control" @bind="entry.Category">
+                    <option value="">Select a category...</option>
+                    <option value="Personal">Personal</option>
+                    <option value="Work">Work</option>
+                    <option value="Health">Health</option>
+                    <option value="Relationships">Relationships</option>
+                    <option value="Hobbies">Hobbies</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Tags</label>
+                <div class="tag-input-container">
+                    <div class="selected-tags">
+                        @foreach (var tag in selectedTags)
+                        {
+                            <span class="tag-selected">
+                                @tag
+                                <button class="tag-remove" @onclick="() => RemoveTag(tag)">×</button>
+                            </span>
+                        }
+                        <input type="text"
+                               class="form-control"
+                               @bind="newTag"
+                               @onkeydown="OnTagKeyDown"
+                               placeholder="Add tags..." />
                     </div>
                 </div>
-            </div>
-        </div>
 
-        <div class="form-group">
-            <label>Category (Optional)</label>
-            <select class="form-control">
-                <option value="">Select a category...</option>
-                <option value="personal">Personal</option>
-                <option value="work">Work</option>
-                <option value="health">Health</option>
-                <option value="relationships">Relationships</option>
-                <option value="hobbies">Hobbies</option>
-            </select>
-        </div>
-
-        <div class="form-group">
-            <label>Tags</label>
-            <div class="tag-input-container">
-                <div class="selected-tags">
-                    <span class="tag-selected">Work <button class="tag-remove">×</button></span>
-                    <span class="tag-selected">Reflection <button class="tag-remove">×</button></span>
+                <div class="suggested-tags">
+                    @foreach (var tag in SuggestedTags)
+                    {
+                        <button class="tag-suggestion"
+                                @onclick="() => AddTag(tag)">
+                            @tag
+                        </button>
+                    }
                 </div>
-                <input type="text" class="form-control" placeholder="Add tags..." />
-            </div>
-            <div class="suggested-tags">
-                <button class="tag-suggestion">Career</button>
-                <button class="tag-suggestion">Health</button>
-                <button class="tag-suggestion">Exercise</button>
-                <button class="tag-suggestion">Family</button>
-                <button class="tag-suggestion">Friends</button>
-                <button class="tag-suggestion">Travel</button>
-                <button class="tag-suggestion">Reading</button>
-            </div>
-        </div>
-
-        <div class="editor-section">
-            <div class="editor-toolbar">
-                <button class="toolbar-btn" title="Bold">
-                    <strong>B</strong>
-                </button>
-                <button class="toolbar-btn" title="Italic">
-                    <em>I</em>
-                </button>
-                <button class="toolbar-btn" title="Underline">
-                    <u>U</u>
-                </button>
-                <div class="toolbar-divider"></div>
-                <button class="toolbar-btn" title="Heading">H1</button>
-                <button class="toolbar-btn" title="Bullet List">• List</button>
-                <button class="toolbar-btn" title="Numbered List">1. List</button>
-                <div class="toolbar-divider"></div>
-                <button class="toolbar-btn" title="Link">🔗</button>
-                <button class="toolbar-btn" title="Quote">❝</button>
             </div>
 
-            <textarea class="content-editor" placeholder="Write your thoughts here...
+            <div class="editor-section">
+                <div class="editor-toolbar">
+                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("**", "**"))"><strong>B</strong></button>
+                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("*", "*"))"><em>I</em></button>
+                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("<u>", "</u>"))"><u>U</u></button>
+                    <div class="toolbar-divider"></div>
+                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("# ", ""))">H1</button>
+                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("- ", ""))">• List</button>
+                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("1. ", ""))">1. List</button>
+                    <div class="toolbar-divider"></div>
+                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("[", "](url)"))">🔗</button>
+                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("> ", ""))">❝</button>
+                </div>
 
-You can use **bold**, *italic*, and other Markdown formatting.
+                <textarea class="content-editor"
+                          @bind="entry.Content"
+                          placeholder="Write your thoughts here..."></textarea>
+            </div>
 
-- Create lists
-- Add links
-- Express yourself freely
+            <div class="form-actions">
+                <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
 
-What's on your mind today?"></textarea>
+                <button class="btn btn-save"
+                        @onclick="SaveEntry"
+                        disabled="@isSaving">
+                    💾 Save Entry
+                </button>
+
+                @if (entry.Id > 0)
+                {
+                    <button class="btn btn-delete"
+                            @onclick="DeleteEntry"
+                            disabled="@isSaving">
+                        🗑️ Delete
+                    </button>
+                }
+            </div>
         </div>
-
-        <div class="form-actions">
-            <button class="btn btn-secondary">Cancel</button>
-            <button class="btn btn-save">💾 Save Entry</button>
-            <button class="btn btn-delete">🗑️ Delete</button>
-        </div>
-    </div>
+    }
 </div>
 
-<style>
-    .entry-page {
-        padding: 2rem;
-        max-width: 1000px;
-        margin: 0 auto;
+@code {
+    private JournalEntry entry = new();
+    private bool isLoading = true;
+    private bool isSaving = false;
+
+    private List<string> selectedTags = new();
+    private string newTag = "";
+    private readonly string[] SuggestedTags = { "Career", "Health", "Exercise", "Family", "Friends", "Travel", "Reading" };
+
+    private readonly (string Value, string Text)[] PrimaryMoods = {
+        ("Happy","Happy"),("Excited","Excited"),("Relaxed","Relaxed"),
+        ("Grateful","Grateful"),("Confident","Confident"),("Calm","Calm"),
+        ("Thoughtful","Thoughtful"),("Curious","Curious"),("Nostalgic","Nostalgic"),
+        ("Bored","Bored"),("Sad","Sad"),("Angry","Angry"),
+        ("Stressed","Stressed"),("Lonely","Lonely"),("Anxious","Anxious")
+    };
+
+    private readonly (string Value, string Text)[] SecondaryMoods = {
+        ("Happy","Happy"),("Excited","Excited"),("Relaxed","Relaxed"),
+        ("Stressed","Stressed"),("Anxious","Anxious")
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        var today = DateTime.Today;
+        entry = await JournalService.GetEntryByDateAsync(today)
+                ?? new JournalEntry { EntryDate = today };
+
+        if (!string.IsNullOrWhiteSpace(entry.Tags))
+            selectedTags = entry.Tags.Split(',').Select(t => t.Trim()).ToList();
+
+        isLoading = false;
     }
 
-    .entry-header {
-        margin-bottom: 2rem;
+    private void SetPrimaryMood(string mood) => entry.PrimaryMood = mood;
+
+    private void ToggleSecondaryMood(string mood)
+    {
+        var list = (entry.SecondaryMoods ?? "")
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .ToList();
+
+        if (list.Contains(mood)) list.Remove(mood);
+        else if (list.Count < 2) list.Add(mood);
+
+        entry.SecondaryMoods = string.Join(",", list);
     }
 
-        .entry-header h1 {
-            margin: 0 0 0.5rem 0;
-            color: #333;
+    private void AddTag(string tag)
+    {
+        if (!selectedTags.Contains(tag))
+        {
+            selectedTags.Add(tag);
+            entry.Tags = string.Join(",", selectedTags);
         }
+    }
 
-        .entry-header .date {
-            color: #666;
-            font-size: 1.1rem;
+    private void RemoveTag(string tag)
+    {
+        selectedTags.Remove(tag);
+        entry.Tags = string.Join(",", selectedTags);
+    }
+
+    private void OnTagKeyDown(KeyboardEventArgs e)
+    {
+        if ((e.Key == "Enter" || e.Key == " ") && !string.IsNullOrWhiteSpace(newTag))
+        {
+            AddTag(newTag.Trim());
+            newTag = "";
         }
-
-    .entry-form {
-        background: white;
-        border-radius: 12px;
-        padding: 2rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
-    .form-group {
-        margin-bottom: 1.5rem;
+    private async Task SaveEntry()
+    {
+        if (string.IsNullOrWhiteSpace(entry.Content)) return;
+
+        isSaving = true;
+        await JournalService.SaveEntryAsync(entry);
+        Navigation.NavigateTo("/");
+        isSaving = false;
     }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: #333;
+    private void Cancel() => Navigation.NavigateTo("/");
+
+    private async Task DeleteEntry()
+    {
+        if (entry.Id > 0)
+        {
+            await JournalService.DeleteEntryAsync(entry.Id);
+            Navigation.NavigateTo("/");
         }
-
-    .form-control {
-        width: 100%;
-        padding: 0.75rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 8px;
-        font-size: 1rem;
-        transition: border-color 0.2s;
     }
 
-        .form-control:focus {
-            outline: none;
-            border-color: #5e3a8e;
-        }
-
-    .mood-section {
-        margin: 2rem 0;
-        padding: 1.5rem;
-        background: #f9fafb;
-        border-radius: 12px;
-    }
-
-        .mood-section h3 {
-            margin: 0 0 1.5rem 0;
-            color: #333;
-        }
-
-    .mood-group {
-        margin-bottom: 1.5rem;
-    }
-
-    .mood-label {
-        display: block;
-        margin-bottom: 1rem;
-        font-weight: 600;
-        color: #555;
-        font-size: 0.95rem;
-    }
-
-    .mood-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-        gap: 0.75rem;
-    }
-
-    .mood-option {
-        position: relative;
-    }
-
-        .mood-option input {
-            position: absolute;
-            opacity: 0;
-        }
-
-        .mood-option label {
-            display: block;
-            padding: 0.75rem;
-            background: white;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: 500;
-        }
-
-        .mood-option input:checked + label {
-            background: #5e3a8e;
-            color: white;
-            border-color: #5e3a8e;
-        }
-
-        .mood-option label:hover {
-            border-color: #5e3a8e;
-        }
-
-    .tag-input-container {
-        border: 2px solid #e5e7eb;
-        border-radius: 8px;
-        padding: 0.5rem;
-        min-height: 60px;
-    }
-
-    .selected-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 0.5rem;
-    }
-
-    .tag-selected {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.4rem 0.75rem;
-        background: #5e3a8e;
-        color: white;
-        border-radius: 16px;
-        font-size: 0.9rem;
-    }
-
-    .tag-remove {
-        background: none;
-        border: none;
-        color: white;
-        font-size: 1.2rem;
-        cursor: pointer;
-        padding: 0;
-        line-height: 1;
-    }
-
-    .suggested-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-top: 0.75rem;
-    }
-
-    .tag-suggestion {
-        padding: 0.4rem 0.75rem;
-        background: #f3f4f6;
-        border: 1px solid #d1d5db;
-        border-radius: 16px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: all 0.2s;
-    }
-
-        .tag-suggestion:hover {
-            background: #e5e7eb;
-        }
-
-    .editor-section {
-        margin: 1.5rem 0;
-    }
-
-    .editor-toolbar {
-        display: flex;
-        gap: 0.5rem;
-        padding: 0.75rem;
-        background: #f9fafb;
-        border: 2px solid #e5e7eb;
-        border-bottom: none;
-        border-radius: 8px 8px 0 0;
-    }
-
-    .toolbar-btn {
-        padding: 0.5rem 0.75rem;
-        background: white;
-        border: 1px solid #d1d5db;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 0.9rem;
-        transition: all 0.2s;
-    }
-
-        .toolbar-btn:hover {
-            background: #e5e7eb;
-        }
-
-    .toolbar-divider {
-        width: 1px;
-        background: #d1d5db;
-        margin: 0 0.25rem;
-    }
-
-    .content-editor {
-        width: 100%;
-        min-height: 400px;
-        padding: 1rem;
-        border: 2px solid #e5e7eb;
-        border-radius: 0 0 8px 8px;
-        font-size: 1rem;
-        font-family: inherit;
-        resize: vertical;
-        line-height: 1.6;
-    }
-
-        .content-editor:focus {
-            outline: none;
-            border-color: #5e3a8e;
-        }
-
-    .form-actions {
-        display: flex;
-        gap: 1rem;
-        justify-content: flex-end;
-        margin-top: 2rem;
-        padding-top: 2rem;
-        border-top: 2px solid #f3f4f6;
-    }
-
-    .btn {
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-    .btn-secondary {
-        background: #f3f4f6;
-        color: #333;
-    }
-
-        .btn-secondary:hover {
-            background: #e5e7eb;
-        }
-
-    .btn-save {
-        background: linear-gradient(135deg, #5e3a8e, #4a2c6d);
-        color: white;
-    }
-
-        .btn-save:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(94, 58, 142, 0.3);
-        }
-
-    .btn-delete {
-        background: #fee2e2;
-        color: #dc2626;
-    }
-
-        .btn-delete:hover {
-            background: #fecaca;
-        }
-</style>
+    private void InsertMarkdown(string prefix, string suffix)
+        => entry.Content += $"\n{prefix}Your text here{suffix}\n";
+}
