@@ -4,7 +4,7 @@
 
 <div class="calendar-page">
     <div class="calendar-header">
-        <h1>📅 Calendar View</h1>
+        <h1>Calendar View</h1>
         <p>Navigate through your journal entries by date</p>
     </div>
 
@@ -34,62 +34,78 @@
             <div class="calendar-day other-month">30</div>
 
             <!-- Current month days -->
-            <div class="calendar-day has-entry mood-positive" data-mood="😊">
+            <div class="calendar-day has-entry mood-positive">
                 <span class="day-number">1</span>
+                <div class="mood-indicator mood-positive"></div>
             </div>
-            <div class="calendar-day has-entry mood-positive" data-mood="🤗">
+            <div class="calendar-day has-entry mood-positive">
                 <span class="day-number">2</span>
+                <div class="mood-indicator mood-positive"></div>
             </div>
-            <div class="calendar-day has-entry mood-neutral" data-mood="🤔">
+            <div class="calendar-day has-entry mood-neutral">
                 <span class="day-number">3</span>
+                <div class="mood-indicator mood-neutral"></div>
             </div>
             <div class="calendar-day">
                 <span class="day-number">4</span>
             </div>
-            <div class="calendar-day has-entry mood-positive" data-mood="😌">
+            <div class="calendar-day has-entry mood-positive">
                 <span class="day-number">5</span>
+                <div class="mood-indicator mood-positive"></div>
             </div>
-            <div class="calendar-day has-entry mood-negative" data-mood="😰">
+            <div class="calendar-day has-entry mood-negative">
                 <span class="day-number">6</span>
+                <div class="mood-indicator mood-negative"></div>
             </div>
-            <div class="calendar-day has-entry mood-neutral" data-mood="😐">
+            <div class="calendar-day has-entry mood-neutral">
                 <span class="day-number">7</span>
+                <div class="mood-indicator mood-neutral"></div>
             </div>
-            <div class="calendar-day has-entry mood-positive" data-mood="😊">
+            <div class="calendar-day has-entry mood-positive">
                 <span class="day-number">8</span>
+                <div class="mood-indicator mood-positive"></div>
             </div>
-            <div class="calendar-day has-entry mood-positive" data-mood="💪">
+            <div class="calendar-day has-entry mood-positive">
                 <span class="day-number">9</span>
+                <div class="mood-indicator mood-positive"></div>
             </div>
             <div class="calendar-day">
                 <span class="day-number">10</span>
             </div>
-            <div class="calendar-day has-entry mood-positive" data-mood="😊">
+            <div class="calendar-day has-entry mood-positive">
                 <span class="day-number">11</span>
+                <div class="mood-indicator mood-positive"></div>
             </div>
-            <div class="calendar-day has-entry mood-neutral" data-mood="🧘">
+            <div class="calendar-day has-entry mood-neutral">
                 <span class="day-number">12</span>
+                <div class="mood-indicator mood-neutral"></div>
             </div>
-            <div class="calendar-day has-entry mood-negative" data-mood="😔">
+            <div class="calendar-day has-entry mood-negative">
                 <span class="day-number">13</span>
+                <div class="mood-indicator mood-negative"></div>
             </div>
-            <div class="calendar-day has-entry mood-positive" data-mood="🙏">
+            <div class="calendar-day has-entry mood-positive">
                 <span class="day-number">14</span>
+                <div class="mood-indicator mood-positive"></div>
             </div>
-            <div class="calendar-day has-entry mood-positive" data-mood="😊">
+            <div class="calendar-day has-entry mood-positive">
                 <span class="day-number">15</span>
+                <div class="mood-indicator mood-positive"></div>
             </div>
             <div class="calendar-day">
                 <span class="day-number">16</span>
             </div>
-            <div class="calendar-day has-entry mood-neutral" data-mood="🤔">
+            <div class="calendar-day has-entry mood-neutral">
                 <span class="day-number">17</span>
+                <div class="mood-indicator mood-neutral"></div>
             </div>
-            <div class="calendar-day has-entry mood-positive" data-mood="😊">
+            <div class="calendar-day has-entry mood-positive">
                 <span class="day-number">18</span>
+                <div class="mood-indicator mood-positive"></div>
             </div>
-            <div class="calendar-day current-day has-entry mood-positive" data-mood="😌">
+            <div class="calendar-day current-day has-entry mood-positive">
                 <span class="day-number">19</span>
+                <div class="mood-indicator mood-positive"></div>
             </div>
             <div class="calendar-day">
                 <span class="day-number">20</span>
@@ -159,7 +175,7 @@
         <h3>December 19, 2025</h3>
         <div class="preview-card">
             <div class="preview-header">
-                <span class="preview-mood">😌 Relaxed</span>
+                <span class="preview-mood">Relaxed</span>
                 <span class="preview-time">Updated at 3:45 PM</span>
             </div>
             <h4>A Peaceful Thursday</h4>
@@ -282,28 +298,42 @@
             font-weight: 600;
         }
 
-            .calendar-day.has-entry::after {
-                content: attr(data-mood);
-                font-size: 1.5rem;
-                margin-top: 0.25rem;
-            }
+    /* Mood indicator circles instead of emojis */
+    .mood-indicator {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        margin-top: 0.25rem;
+    }
 
-        .calendar-day.mood-positive {
-            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+        .mood-indicator.mood-positive {
+            background: #10b981;
         }
 
-        .calendar-day.mood-neutral {
-            background: linear-gradient(135deg, #fef3c7, #fde68a);
+        .mood-indicator.mood-neutral {
+            background: #f59e0b;
         }
 
-        .calendar-day.mood-negative {
-            background: linear-gradient(135deg, #fee2e2, #fecaca);
+        .mood-indicator.mood-negative {
+            background: #ef4444;
         }
 
-        .calendar-day.current-day {
-            border-color: #5e3a8e;
-            box-shadow: 0 0 0 3px rgba(94, 58, 142, 0.2);
-        }
+    .calendar-day.mood-positive {
+        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    }
+
+    .calendar-day.mood-neutral {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+    }
+
+    .calendar-day.mood-negative {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+    }
+
+    .calendar-day.current-day {
+        border-color: #5e3a8e;
+        box-shadow: 0 0 0 3px rgba(94, 58, 142, 0.2);
+    }
 
     .day-number {
         font-size: 1rem;
@@ -376,6 +406,7 @@
     .preview-mood {
         font-size: 1.2rem;
         font-weight: 600;
+        color: #10b981;
     }
 
     .preview-time {
