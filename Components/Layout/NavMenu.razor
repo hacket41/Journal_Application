@@ -1,27 +1,103 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
-    <div class="container-fluid">
-        <a class="navbar-brand" href="">Journal</a>
-    </div>
+﻿@inherits LayoutComponentBase
+
+<div class="layout">
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Journal</h2>
+        </div>
+        <nav class="nav flex-column">
+            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">🏠 Home</NavLink>
+            <NavLink class="nav-link" href="/calendar">📅 Calendar</NavLink>
+            <NavLink class="nav-link" href="/search">🔍 Search</NavLink>
+            <NavLink class="nav-link" href="/timeline">⏱ Timeline</NavLink>
+            <NavLink class="nav-link" href="/today">📝 Today</NavLink>
+            <NavLink class="nav-link" href="/settings">⚙️ Settings</NavLink>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-row">
+            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+        </header>
+
+        <article class="content">
+            @Body
+        </article>
+    </main>
 </div>
 
-<input type="checkbox" title="Navigation menu" class="navbar-toggler" />
+<style>
+    /* Layout */
+    .layout {
+        display: flex;
+        height: 100vh;
+    }
 
-<div class="nav-scrollable" onclick="document.querySelector('.navbar-toggler').click()">
-    <nav class="nav flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
-            </NavLink>
-        </div>
-    </nav>
-</div>
+    /* Sidebar */
+    .sidebar {
+        width: 220px;
+        background: linear-gradient(180deg, #5e3a8e 0%, #4a2c6d 100%);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        padding: 1rem 0;
+    }
+
+    .sidebar-header {
+        text-align: center;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 2rem;
+    }
+
+    .nav-link {
+        padding: 0.75rem 1.5rem;
+        color: white;
+        text-decoration: none;
+        font-size: 1.1rem;
+        display: block;
+        transition: background 0.2s;
+    }
+
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            font-weight: bold;
+        }
+
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+    /* Main content */
+    .main-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .top-row {
+        height: 3.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 1.5rem;
+        background-color: #f7f7f7;
+        border-bottom: 1px solid #d6d5d5;
+    }
+
+        .top-row a {
+            color: #000;
+            text-decoration: none;
+        }
+
+            .top-row a:hover {
+                text-decoration: underline;
+            }
+
+    .content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+    }
+
+</style>

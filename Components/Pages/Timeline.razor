@@ -1,0 +1,504 @@
+﻿@page "/timeline"
+
+<PageTitle>Timeline</PageTitle>
+
+<div class="timeline-page">
+    <div class="timeline-header">
+        <h1>📜 Journal Timeline</h1>
+        <p>Browse all your journal entries chronologically</p>
+    </div>
+
+    <div class="timeline-filters">
+        <div class="filter-group">
+            <label>Sort by:</label>
+            <select class="filter-select">
+                <option>Newest First</option>
+                <option>Oldest First</option>
+            </select>
+        </div>
+        <div class="filter-group">
+            <label>View:</label>
+            <select class="filter-select">
+                <option>All Entries</option>
+                <option>This Week</option>
+                <option>This Month</option>
+                <option>This Year</option>
+            </select>
+        </div>
+        <button class="btn-filter">🔍 Advanced Filters</button>
+    </div>
+
+    <div class="timeline-container">
+        <!-- Entry 1 -->
+        <div class="timeline-entry">
+            <div class="entry-date-badge">
+                <div class="badge-day">19</div>
+                <div class="badge-month">DEC</div>
+            </div>
+            <div class="entry-content">
+                <div class="entry-header">
+                    <h3>A Peaceful Thursday</h3>
+                    <div class="entry-meta">
+                        <span class="mood-badge positive">😌 Relaxed</span>
+                        <span class="time">3:45 PM</span>
+                    </div>
+                </div>
+                <p class="entry-excerpt">
+                    Today was incredibly peaceful. I took some time to meditate in the morning,
+                    which really set the tone for the rest of the day. Work was productive, and I
+                    managed to finish that project I've been working on...
+                </p>
+                <div class="entry-tags">
+                    <span class="tag">Meditation</span>
+                    <span class="tag">Self-care</span>
+                    <span class="tag">Work</span>
+                    <span class="tag">Reflection</span>
+                </div>
+                <div class="entry-actions">
+                    <button class="action-btn">👁️ View</button>
+                    <button class="action-btn">✏️ Edit</button>
+                    <button class="action-btn">🗑️ Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entry 2 -->
+        <div class="timeline-entry">
+            <div class="entry-date-badge">
+                <div class="badge-day">18</div>
+                <div class="badge-month">DEC</div>
+            </div>
+            <div class="entry-content">
+                <div class="entry-header">
+                    <h3>Midweek Momentum</h3>
+                    <div class="entry-meta">
+                        <span class="mood-badge positive">😊 Happy</span>
+                        <span class="time">8:30 PM</span>
+                    </div>
+                </div>
+                <p class="entry-excerpt">
+                    Wednesday energy was strong today! Got through most of my to-do list and even
+                    had time for a nice walk in the park. The weather was perfect - crisp and clear.
+                    Feeling grateful for these simple moments...
+                </p>
+                <div class="entry-tags">
+                    <span class="tag">Exercise</span>
+                    <span class="tag">Nature</span>
+                    <span class="tag">Gratitude</span>
+                </div>
+                <div class="entry-actions">
+                    <button class="action-btn">👁️ View</button>
+                    <button class="action-btn">✏️ Edit</button>
+                    <button class="action-btn">🗑️ Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entry 3 -->
+        <div class="timeline-entry">
+            <div class="entry-date-badge">
+                <div class="badge-day">17</div>
+                <div class="badge-month">DEC</div>
+            </div>
+            <div class="entry-content">
+                <div class="entry-header">
+                    <h3>Reflections on Growth</h3>
+                    <div class="entry-meta">
+                        <span class="mood-badge neutral">🤔 Thoughtful</span>
+                        <span class="time">10:15 PM</span>
+                    </div>
+                </div>
+                <p class="entry-excerpt">
+                    Been thinking a lot about personal growth lately. Looking back at where I was
+                    a year ago, I can see how much I've changed. Not all of it was easy, but every
+                    challenge taught me something valuable...
+                </p>
+                <div class="entry-tags">
+                    <span class="tag">Personal Growth</span>
+                    <span class="tag">Reflection</span>
+                    <span class="tag">Self-care</span>
+                </div>
+                <div class="entry-actions">
+                    <button class="action-btn">👁️ View</button>
+                    <button class="action-btn">✏️ Edit</button>
+                    <button class="action-btn">🗑️ Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entry 4 -->
+        <div class="timeline-entry">
+            <div class="entry-date-badge">
+                <div class="badge-day">15</div>
+                <div class="badge-month">DEC</div>
+            </div>
+            <div class="entry-content">
+                <div class="entry-header">
+                    <h3>Sunday Vibes</h3>
+                    <div class="entry-meta">
+                        <span class="mood-badge positive">😊 Happy</span>
+                        <span class="time">6:20 PM</span>
+                    </div>
+                </div>
+                <p class="entry-excerpt">
+                    Perfect lazy Sunday! Spent the morning reading that book I've been meaning to
+                    finish, then had brunch with friends. These are the days I treasure most - no
+                    pressure, just enjoying life...
+                </p>
+                <div class="entry-tags">
+                    <span class="tag">Reading</span>
+                    <span class="tag">Friends</span>
+                    <span class="tag">Leisure</span>
+                </div>
+                <div class="entry-actions">
+                    <button class="action-btn">👁️ View</button>
+                    <button class="action-btn">✏️ Edit</button>
+                    <button class="action-btn">🗑️ Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entry 5 -->
+        <div class="timeline-entry">
+            <div class="entry-date-badge">
+                <div class="badge-day">14</div>
+                <div class="badge-month">DEC</div>
+            </div>
+            <div class="entry-content">
+                <div class="entry-header">
+                    <h3>Grateful Heart</h3>
+                    <div class="entry-meta">
+                        <span class="mood-badge positive">🙏 Grateful</span>
+                        <span class="time">9:45 PM</span>
+                    </div>
+                </div>
+                <p class="entry-excerpt">
+                    Today I'm just feeling incredibly grateful. For my health, for the people in my
+                    life, for the opportunities I have. Sometimes we need to pause and appreciate
+                    what we have rather than focusing on what we don't...
+                </p>
+                <div class="entry-tags">
+                    <span class="tag">Gratitude</span>
+                    <span class="tag">Family</span>
+                    <span class="tag">Spirituality</span>
+                </div>
+                <div class="entry-actions">
+                    <button class="action-btn">👁️ View</button>
+                    <button class="action-btn">✏️ Edit</button>
+                    <button class="action-btn">🗑️ Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Entry 6 -->
+        <div class="timeline-entry">
+            <div class="entry-date-badge">
+                <div class="badge-day">13</div>
+                <div class="badge-month">DEC</div>
+            </div>
+            <div class="entry-content">
+                <div class="entry-header">
+                    <h3>A Difficult Day</h3>
+                    <div class="entry-meta">
+                        <span class="mood-badge negative">😔 Lonely</span>
+                        <span class="time">11:30 PM</span>
+                    </div>
+                </div>
+                <p class="entry-excerpt">
+                    Not every day can be good, and today was one of those harder ones. Feeling a
+                    bit isolated and missing having people to talk to. I know this will pass, but
+                    right now it's tough...
+                </p>
+                <div class="entry-tags">
+                    <span class="tag">Mental Health</span>
+                    <span class="tag">Reflection</span>
+                </div>
+                <div class="entry-actions">
+                    <button class="action-btn">👁️ View</button>
+                    <button class="action-btn">✏️ Edit</button>
+                    <button class="action-btn">🗑️ Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="pagination">
+        <button class="page-btn" disabled>‹ Previous</button>
+        <div class="page-numbers">
+            <button class="page-num active">1</button>
+            <button class="page-num">2</button>
+            <button class="page-num">3</button>
+            <button class="page-num">4</button>
+            <span class="page-dots">...</span>
+            <button class="page-num">12</button>
+        </div>
+        <button class="page-btn">Next ›</button>
+    </div>
+</div>
+
+<style>
+    .timeline-page {
+        padding: 2rem;
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+
+    .timeline-header {
+        margin-bottom: 2rem;
+    }
+
+        .timeline-header h1 {
+            margin: 0 0 0.5rem 0;
+            color: #333;
+        }
+
+        .timeline-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+    .timeline-filters {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #555;
+        }
+
+    .filter-select {
+        padding: 0.5rem 1rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        font-size: 0.95rem;
+    }
+
+    .btn-filter {
+        padding: 0.5rem 1rem;
+        background: #5e3a8e;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+        .btn-filter:hover {
+            background: #4a2c6d;
+        }
+
+    .timeline-container {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .timeline-entry {
+        display: flex;
+        gap: 1.5rem;
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        transition: all 0.2s;
+    }
+
+        .timeline-entry:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+        }
+
+    .entry-date-badge {
+        flex-shrink: 0;
+        width: 70px;
+        height: 70px;
+        background: linear-gradient(135deg, #5e3a8e, #4a2c6d);
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+    }
+
+    .badge-day {
+        font-size: 1.8rem;
+        font-weight: 700;
+        line-height: 1;
+    }
+
+    .badge-month {
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin-top: 0.25rem;
+    }
+
+    .entry-content {
+        flex: 1;
+    }
+
+    .entry-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 0.75rem;
+        gap: 1rem;
+    }
+
+        .entry-header h3 {
+            margin: 0;
+            color: #333;
+            font-size: 1.3rem;
+        }
+
+    .entry-meta {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex-shrink: 0;
+    }
+
+    .mood-badge {
+        padding: 0.4rem 0.75rem;
+        border-radius: 16px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+        .mood-badge.positive {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .mood-badge.neutral {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .mood-badge.negative {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+    .time {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .entry-excerpt {
+        color: #555;
+        line-height: 1.6;
+        margin-bottom: 1rem;
+    }
+
+    .entry-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .tag {
+        padding: 0.4rem 0.75rem;
+        background: #f3f4f6;
+        color: #5e3a8e;
+        border-radius: 16px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .entry-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+
+    .action-btn {
+        padding: 0.5rem 1rem;
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+        .action-btn:hover {
+            background: #f3f4f6;
+        }
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 2px solid #f3f4f6;
+    }
+
+    .page-btn {
+        padding: 0.5rem 1rem;
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+        .page-btn:hover:not(:disabled) {
+            background: #f9fafb;
+            border-color: #5e3a8e;
+        }
+
+        .page-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+    .page-numbers {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .page-num {
+        width: 40px;
+        height: 40px;
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+        .page-num:hover {
+            border-color: #5e3a8e;
+        }
+
+        .page-num.active {
+            background: #5e3a8e;
+            color: white;
+            border-color: #5e3a8e;
+        }
+
+    .page-dots {
+        color: #666;
+        font-weight: 700;
+    }
+
+    
+</style>

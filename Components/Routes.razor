@@ -1,6 +1,71 @@
-﻿<Router AppAssembly="typeof(MauiProgram).Assembly" NotFoundPage="typeof(Pages.NotFound)">
+﻿<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
-        <FocusOnNavigate RouteData="routeData" Selector="h1" />
+        <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
+        <FocusOnNavigate RouteData="@routeData" Selector="h1" />
     </Found>
+    <NotFound>
+        <PageTitle>Not found</PageTitle>
+        <LayoutView Layout="@typeof(Layout.MainLayout)">
+            <div class="not-found-page">
+                <div class="not-found-content">
+                    <h1>404</h1>
+                    <h2>Page Not Found</h2>
+                    <p>Sorry, we couldn't find the page you're looking for.</p>
+                    <a href="/" class="btn-home">
+                        🏠 Go to Dashboard
+                    </a>
+                </div>
+            </div>
+        </LayoutView>
+    </NotFound>
 </Router>
+
+<style>
+    .not-found-page {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: 2rem;
+    }
+
+    .not-found-content {
+        text-align: center;
+        max-width: 500px;
+    }
+
+        .not-found-content h1 {
+            font-size: 8rem;
+            margin: 0;
+            color: #5e3a8e;
+            font-weight: 700;
+        }
+
+        .not-found-content h2 {
+            font-size: 2rem;
+            margin: 1rem 0;
+            color: #333;
+        }
+
+        .not-found-content p {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+        }
+
+    .btn-home {
+        display: inline-block;
+        padding: 0.875rem 2rem;
+        background: linear-gradient(135deg, #5e3a8e, #4a2c6d);
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(94, 58, 142, 0.3);
+        }
+</style>
