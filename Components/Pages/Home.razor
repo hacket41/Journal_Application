@@ -1,0 +1,296 @@
+﻿@page "/"
+
+<PageTitle>Dashboard</PageTitle>
+
+<div class="dashboard">
+    <div class="dashboard-header">
+        <h1>Welcome Back! 👋</h1>
+        <p class="date-display">@DateTime.Now.ToString("dddd, MMMM dd, yyyy")</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card streak">
+            <div class="stat-icon">🔥</div>
+            <div class="stat-content">
+                <h3>Current Streak</h3>
+                <p class="stat-number">7 days</p>
+            </div>
+        </div>
+
+        <div class="stat-card longest">
+            <div class="stat-icon">🏆</div>
+            <div class="stat-content">
+                <h3>Longest Streak</h3>
+                <p class="stat-number">15 days</p>
+            </div>
+        </div>
+
+        <div class="stat-card total">
+            <div class="stat-icon">📝</div>
+            <div class="stat-content">
+                <h3>Total Entries</h3>
+                <p class="stat-number">42</p>
+            </div>
+        </div>
+
+        <div class="stat-card missed">
+            <div class="stat-icon">📅</div>
+            <div class="stat-content">
+                <h3>Missed Days</h3>
+                <p class="stat-number">3 days</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-grid">
+        <div class="card mood-card">
+            <h2>Mood Overview (Last 7 Days)</h2>
+            <div class="mood-chart">
+                <div class="mood-bar positive" style="width: 60%">
+                    <span>Positive 60%</span>
+                </div>
+                <div class="mood-bar neutral" style="width: 25%">
+                    <span>Neutral 25%</span>
+                </div>
+                <div class="mood-bar negative" style="width: 15%">
+                    <span>Negative 15%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card frequent-mood">
+            <h2>Most Frequent Moods</h2>
+            <div class="mood-list">
+                <div class="mood-item">
+                    <span class="mood-emoji">😊</span>
+                    <span class="mood-name">Happy</span>
+                    <span class="mood-count">12 times</span>
+                </div>
+                <div class="mood-item">
+                    <span class="mood-emoji">😌</span>
+                    <span class="mood-name">Calm</span>
+                    <span class="mood-count">8 times</span>
+                </div>
+                <div class="mood-item">
+                    <span class="mood-emoji">🤔</span>
+                    <span class="mood-name">Thoughtful</span>
+                    <span class="mood-count">6 times</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card tags-card">
+            <h2>Most Used Tags</h2>
+            <div class="tag-cloud">
+                <span class="tag tag-lg">Work</span>
+                <span class="tag tag-md">Health</span>
+                <span class="tag tag-lg">Personal Growth</span>
+                <span class="tag tag-sm">Travel</span>
+                <span class="tag tag-md">Exercise</span>
+                <span class="tag tag-sm">Reading</span>
+                <span class="tag tag-md">Family</span>
+            </div>
+        </div>
+
+        <div class="card quick-action">
+            <h2>Quick Actions</h2>
+            <div class="action-buttons">
+                <a href="/today" class="btn btn-primary">✍️ Write Today's Entry</a>
+                <a href="/timeline" class="btn btn-secondary">📜 View Timeline</a>
+                <a href="/calendar" class="btn btn-secondary">📅 Open Calendar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dashboard {
+        padding: 2rem;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        margin-bottom: 2rem;
+    }
+
+        .dashboard-header h1 {
+            margin: 0 0 0.5rem 0;
+            font-size: 2rem;
+            color: #333;
+        }
+
+    .date-display {
+        color: #666;
+        font-size: 1.1rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .stat-icon {
+        font-size: 2.5rem;
+    }
+
+    .stat-content h3 {
+        margin: 0 0 0.5rem 0;
+        font-size: 0.9rem;
+        color: #666;
+        font-weight: 500;
+    }
+
+    .stat-number {
+        margin: 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .content-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .card {
+        background: white;
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+        .card h2 {
+            margin: 0 0 1.5rem 0;
+            font-size: 1.3rem;
+            color: #333;
+        }
+
+    .mood-chart {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .mood-bar {
+        padding: 0.75rem;
+        border-radius: 8px;
+        color: white;
+        font-weight: 600;
+    }
+
+        .mood-bar.positive {
+            background: linear-gradient(135deg, #4ade80, #22c55e);
+        }
+
+        .mood-bar.neutral {
+            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        }
+
+        .mood-bar.negative {
+            background: linear-gradient(135deg, #f87171, #ef4444);
+        }
+
+    .mood-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .mood-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        background: #f9fafb;
+        border-radius: 8px;
+    }
+
+    .mood-emoji {
+        font-size: 1.8rem;
+    }
+
+    .mood-name {
+        flex: 1;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .mood-count {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .tag-cloud {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+
+    .tag {
+        padding: 0.5rem 1rem;
+        background: #e0e7ff;
+        color: #4f46e5;
+        border-radius: 20px;
+        font-weight: 500;
+    }
+
+    .tag-lg {
+        font-size: 1.1rem;
+    }
+
+    .tag-md {
+        font-size: 1rem;
+    }
+
+    .tag-sm {
+        font-size: 0.9rem;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .btn {
+        padding: 0.875rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #5e3a8e, #4a2c6d);
+        color: white;
+    }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(94, 58, 142, 0.3);
+        }
+
+    .btn-secondary {
+        background: #f3f4f6;
+        color: #333;
+    }
+
+        .btn-secondary:hover {
+            background: #e5e7eb;
+        }
+</style>

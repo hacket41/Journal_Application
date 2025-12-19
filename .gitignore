@@ -1,0 +1,82 @@
+# Build results
+bin/
+obj/
+*.user
+*.userosscache
+*.suo
+*.tmp
+*.temp
+*.log
+*.vspscc
+*.vssscc
+
+# Visual Studio / Rider / IDE
+.vscode/
+.vs/
+*.code-workspace
+*.sln.docstates
+.idea/
+
+# .NET Core / MAUI
+*.dbmdl
+*.pdb
+*.dll
+*.exe
+*.nupkg
+*.snk
+*.cache
+*.apk
+*.aab
+*.ipa
+*.app
+*.appx
+*.appxbundle
+*.msix
+*.msixbundle
+*.xamlc
+*.xaml.g.cs
+*.xaml.g.i.cs
+
+# NuGet packages
+*.nupkg
+packages/
+.nuget/
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# MAUI specific
+Platforms/**/obj/
+Platforms/**/bin/
+Resources/Raw/**/bin/
+Resources/Raw/**/obj/
+Resources/Raw/**/Debug/
+Resources/Raw/**/Release/
+
+# Rider
+.idea/
+*.iml
+out/
+
+# User-specific files
+*.userprefs
+*.dotCover
+
+# Mac
+*.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Blazor specific
+wwwroot/_framework/
+wwwroot/css/app.css
+wwwroot/css/app.*.bundle.scp.css
