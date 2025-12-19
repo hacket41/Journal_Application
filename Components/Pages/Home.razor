@@ -1,45 +1,19 @@
 ﻿@page "/"
+@using System.Globalization
 
 <PageTitle>Dashboard</PageTitle>
 
 <div class="dashboard">
     <div class="dashboard-header">
         <h1>Welcome Back! 👋</h1>
-        <p class="date-display">@DateTime.Now.ToString("dddd, MMMM dd, yyyy")</p>
+        <p class="date-display">@DateTime.Now.ToString("dddd, MMMM dd, yyyy", CultureInfo.InvariantCulture)</p>
     </div>
 
     <div class="stats-grid">
-        <div class="stat-card streak">
-            <div class="stat-icon">🔥</div>
-            <div class="stat-content">
-                <h3>Current Streak</h3>
-                <p class="stat-number">7 days</p>
-            </div>
-        </div>
-
-        <div class="stat-card longest">
-            <div class="stat-icon">🏆</div>
-            <div class="stat-content">
-                <h3>Longest Streak</h3>
-                <p class="stat-number">15 days</p>
-            </div>
-        </div>
-
-        <div class="stat-card total">
-            <div class="stat-icon">📝</div>
-            <div class="stat-content">
-                <h3>Total Entries</h3>
-                <p class="stat-number">42</p>
-            </div>
-        </div>
-
-        <div class="stat-card missed">
-            <div class="stat-icon">📅</div>
-            <div class="stat-content">
-                <h3>Missed Days</h3>
-                <p class="stat-number">3 days</p>
-            </div>
-        </div>
+        <StatCard Icon="🔥" Title="Current Streak" Value="7 days" />
+        <StatCard Icon="🏆" Title="Longest Streak" Value="15 days" />
+        <StatCard Icon="📝" Title="Total Entries" Value="42" />
+        <StatCard Icon="📅" Title="Missed Days" Value="3 days" />
     </div>
 
     <div class="content-grid">
@@ -47,13 +21,13 @@
             <h2>Mood Overview (Last 7 Days)</h2>
             <div class="mood-chart">
                 <div class="mood-bar positive" style="width: 60%">
-                    <span>Positive 60%</span>
+                    <span>Positive <strong>60%</strong></span>
                 </div>
                 <div class="mood-bar neutral" style="width: 25%">
-                    <span>Neutral 25%</span>
+                    <span>Neutral <strong>25%</strong></span>
                 </div>
                 <div class="mood-bar negative" style="width: 15%">
-                    <span>Negative 15%</span>
+                    <span>Negative <strong>15%</strong></span>
                 </div>
             </div>
         </div>
@@ -61,43 +35,47 @@
         <div class="card frequent-mood">
             <h2>Most Frequent Moods</h2>
             <div class="mood-list">
-                <div class="mood-item">
-                    <span class="mood-emoji">😊</span>
-                    <span class="mood-name">Happy</span>
-                    <span class="mood-count">12 times</span>
-                </div>
-                <div class="mood-item">
-                    <span class="mood-emoji">😌</span>
-                    <span class="mood-name">Calm</span>
-                    <span class="mood-count">8 times</span>
-                </div>
-                <div class="mood-item">
-                    <span class="mood-emoji">🤔</span>
-                    <span class="mood-name">Thoughtful</span>
-                    <span class="mood-count">6 times</span>
-                </div>
+                <MoodItem Emoji="😊" Name="Happy" Count="12" />
+                <MoodItem Emoji="😌" Name="Calm" Count="8" />
+                <MoodItem Emoji="🤔" Name="Thoughtful" Count="6" />
             </div>
         </div>
 
         <div class="card tags-card">
             <h2>Most Used Tags</h2>
             <div class="tag-cloud">
-                <span class="tag tag-lg">Work</span>
-                <span class="tag tag-md">Health</span>
-                <span class="tag tag-lg">Personal Growth</span>
-                <span class="tag tag-sm">Travel</span>
-                <span class="tag tag-md">Exercise</span>
-                <span class="tag tag-sm">Reading</span>
-                <span class="tag tag-md">Family</span>
+                <TagItem Text="Work" Size="lg" />
+                <TagItem Text="Health" Size="md" />
+                <TagItem Text="Personal Growth" Size="lg" />
+                <TagItem Text="Travel" Size="sm" />
+                <TagItem Text="Exercise" Size="md" />
+                <TagItem Text="Reading" Size="sm" />
+                <TagItem Text="Family" Size="md" />
             </div>
         </div>
 
         <div class="card quick-action">
             <h2>Quick Actions</h2>
             <div class="action-buttons">
-                <a href="/today" class="btn btn-primary">✍️ Write Today's Entry</a>
-                <a href="/timeline" class="btn btn-secondary">📜 View Timeline</a>
-                <a href="/calendar" class="btn btn-secondary">📅 Open Calendar</a>
+                <a href="/today" class="btn btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm1 2a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2zm2 2v10h8V4H5z"/>
+                    </svg>
+                    Write Today’s Entry
+                </a>
+                <a href="/timeline" class="btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM2 2a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1H2z"/>
+                        <path d="M2 3.5v-.5H1v.5a.5.5 0 0 1-.5.5H0v1h.5a.5.5 0 0 1 .5.5v.5h1v-.5a.5.5 0 0 1 .5-.5H3v-1H2.5a.5.5 0 0 1-.5-.5z"/>
+                    </svg>
+                    View Timeline
+                </a>
+                <a href="/calendar" class="btn btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"/>
+                    </svg>
+                    Open Calendar
+                </a>
             </div>
         </div>
     </div>
@@ -111,154 +89,194 @@
     }
 
     .dashboard-header {
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
     }
 
         .dashboard-header h1 {
-            margin: 0 0 0.5rem 0;
-            font-size: 2rem;
-            color: #333;
+            margin: 0 0 0.75rem 0;
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1.2;
         }
 
     .date-display {
-        color: #666;
-        font-size: 1.1rem;
+        color: #64748b;
+        font-size: 1.125rem;
+        font-weight: 500;
     }
 
     .stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
         gap: 1.5rem;
-        margin-bottom: 2rem;
+        margin-bottom: 2.5rem;
     }
 
     .stat-card {
         background: white;
-        border-radius: 12px;
+        border-radius: 16px;
         padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 1.25rem;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
 
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+        }
+
     .stat-icon {
-        font-size: 2.5rem;
+        font-size: 2rem;
+        width: 3rem;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f1f5f9;
+        border-radius: 12px;
+        color: #475569;
+    }
+
+    .stat-content {
+        flex: 1;
     }
 
     .stat-content h3 {
-        margin: 0 0 0.5rem 0;
-        font-size: 0.9rem;
-        color: #666;
-        font-weight: 500;
+        margin: 0 0 0.25rem 0;
+        font-size: 0.875rem;
+        color: #64748b;
+        font-weight: 600;
+        letter-spacing: 0.2px;
     }
 
     .stat-number {
         margin: 0;
-        font-size: 1.8rem;
-        font-weight: 700;
-        color: #333;
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1.2;
     }
 
     .content-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 1.75rem;
     }
 
     .card {
         background: white;
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        border-radius: 16px;
+        padding: 1.75rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+        transition: box-shadow 0.2s ease;
     }
 
+        .card:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+        }
+
         .card h2 {
-            margin: 0 0 1.5rem 0;
-            font-size: 1.3rem;
-            color: #333;
+            margin: 0 0 1.25rem 0;
+            font-size: 1.375rem;
+            font-weight: 700;
+            color: #1e293b;
         }
 
     .mood-chart {
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: 0.875rem;
     }
 
     .mood-bar {
-        padding: 0.75rem;
-        border-radius: 8px;
+        padding: 0.875rem 1rem;
+        border-radius: 12px;
         color: white;
         font-weight: 600;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        box-shadow: inset 0 -2px 4px rgba(0,0,0,0.1);
     }
 
         .mood-bar.positive {
-            background: linear-gradient(135deg, #4ade80, #22c55e);
+            background: linear-gradient(135deg, #16a34a, #15803d);
         }
 
         .mood-bar.neutral {
-            background: linear-gradient(135deg, #fbbf24, #f59e0b);
+            background: linear-gradient(135deg, #eab308, #ca8a04);
         }
 
         .mood-bar.negative {
-            background: linear-gradient(135deg, #f87171, #ef4444);
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
         }
 
     .mood-list {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 0.875rem;
     }
 
     .mood-item {
         display: flex;
         align-items: center;
         gap: 1rem;
-        padding: 0.75rem;
-        background: #f9fafb;
-        border-radius: 8px;
+        padding: 0.875rem;
+        background: #f8fafc;
+        border-radius: 12px;
+        transition: background 0.2s;
     }
 
+        .mood-item:hover {
+            background: #f1f5f9;
+        }
+
     .mood-emoji {
-        font-size: 1.8rem;
+        font-size: 1.5rem;
+        flex-shrink: 0;
     }
 
     .mood-name {
         flex: 1;
-        font-weight: 500;
-        color: #333;
+        font-weight: 600;
+        color: #1e293b;
+        font-size: 1rem;
     }
 
     .mood-count {
-        color: #666;
-        font-size: 0.9rem;
+        color: #64748b;
+        font-size: 0.875rem;
+        font-weight: 500;
     }
 
     .tag-cloud {
         display: flex;
         flex-wrap: wrap;
-        gap: 0.75rem;
+        gap: 0.625rem;
     }
 
     .tag {
         padding: 0.5rem 1rem;
-        background: #e0e7ff;
-        color: #4f46e5;
-        border-radius: 20px;
-        font-weight: 500;
+        background: #eef2ff;
+        color: #4338ca;
+        border-radius: 9999px;
+        font-weight: 600;
+        font-size: 0.875rem;
+        transition: all 0.2s;
     }
 
-    .tag-lg {
-        font-size: 1.1rem;
-    }
+        .tag:hover {
+            background: #e0e7ff;
+            transform: scale(1.03);
+        }
 
-    .tag-md {
-        font-size: 1rem;
-    }
-
-    .tag-sm {
-        font-size: 0.9rem;
-    }
+    .tag-lg { font-size: 1rem; }
+    .tag-md { font-size: 0.9375rem; }
+    .tag-sm { font-size: 0.8125rem; }
 
     .action-buttons {
         display: flex;
@@ -267,30 +285,116 @@
     }
 
     .btn {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
         padding: 0.875rem 1.5rem;
-        border-radius: 8px;
+        border-radius: 12px;
         text-decoration: none;
-        text-align: center;
         font-weight: 600;
-        transition: all 0.2s;
+        font-size: 1rem;
+        text-align: center;
+        transition: all 0.25s ease;
+        justify-content: center;
     }
 
     .btn-primary {
-        background: linear-gradient(135deg, #5e3a8e, #4a2c6d);
+        background: linear-gradient(135deg, #7e22ce, #6b21a8);
         color: white;
+        border: none;
     }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(94, 58, 142, 0.3);
+            box-shadow: 0 6px 16px rgba(126, 34, 206, 0.35);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
         }
 
     .btn-secondary {
-        background: #f3f4f6;
-        color: #333;
+        background: #f1f5f9;
+        color: #334155;
+        border: 1px solid #e2e8f0;
     }
 
         .btn-secondary:hover {
-            background: #e5e7eb;
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        .btn svg {
+            flex-shrink: 0;
         }
 </style>
+
+@code {
+    private class StatCard : ComponentBase
+    {
+        [Parameter] public string Icon { get; set; } = "•";
+        [Parameter] public string Title { get; set; } = "";
+        [Parameter] public string Value { get; set; } = "";
+
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
+        {
+            builder.OpenElement(0, "div");
+            builder.AddAttribute(1, "class", "stat-card");
+            builder.OpenElement(2, "div");
+            builder.AddAttribute(3, "class", "stat-icon");
+            builder.AddContent(4, Icon);
+            builder.CloseElement();
+            builder.OpenElement(5, "div");
+            builder.AddAttribute(6, "class", "stat-content");
+            builder.OpenElement(7, "h3");
+            builder.AddContent(8, Title);
+            builder.CloseElement();
+            builder.OpenElement(9, "p");
+            builder.AddAttribute(10, "class", "stat-number");
+            builder.AddContent(11, Value);
+            builder.CloseElement();
+            builder.CloseElement();
+            builder.CloseElement();
+        }
+    }
+
+    private class MoodItem : ComponentBase
+    {
+        [Parameter] public string Emoji { get; set; } = "🙂";
+        [Parameter] public string Name { get; set; } = "";
+        [Parameter] public int Count { get; set; } = 0;
+
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
+        {
+            builder.OpenElement(0, "div");
+            builder.AddAttribute(1, "class", "mood-item");
+            builder.OpenElement(2, "span");
+            builder.AddAttribute(3, "class", "mood-emoji");
+            builder.AddContent(4, Emoji);
+            builder.CloseElement();
+            builder.OpenElement(5, "span");
+            builder.AddAttribute(6, "class", "mood-name");
+            builder.AddContent(7, Name);
+            builder.CloseElement();
+            builder.OpenElement(8, "span");
+            builder.AddAttribute(9, "class", "mood-count");
+            builder.AddContent(10, $"{Count} times");
+            builder.CloseElement();
+            builder.CloseElement();
+        }
+    }
+
+    private class TagItem : ComponentBase
+    {
+        [Parameter] public string Text { get; set; } = "";
+        [Parameter] public string Size { get; set; } = "md";
+
+        protected override void BuildRenderTree(Microsoft.AspNetCore.Components.Rendering.RenderTreeBuilder builder)
+        {
+            builder.OpenElement(0, "span");
+            builder.AddAttribute(1, "class", $"tag tag-{Size}");
+            builder.AddContent(2, Text);
+            builder.CloseElement();
+        }
+    }
+}
