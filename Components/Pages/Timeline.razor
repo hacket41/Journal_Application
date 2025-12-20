@@ -173,14 +173,20 @@ else
         "Curious","Nostalgic","Bored","Sad","Angry","Stressed","Lonely","Anxious"
     };
 
-    protected override async Task OnInitializedAsync()
+    // ✅ This runs whenever the route parameter changes
+    protected override async Task OnParametersSetAsync()
     {
         isLoading = true;
 
         if (EntryId.HasValue)
+        {
             await LoadEntry(EntryId.Value);
+            isEditing = false; // default to view mode
+        }
         else
+        {
             await LoadEntries();
+        }
 
         isLoading = false;
     }
@@ -256,14 +262,27 @@ else
     {
         if (entry != null)
         {
+            // ✅ Only set CreatedDate if creating new
+            if (entry.Id == 0)
+            {
+                entry.CreatedDate = DateTime.UtcNow;
+            }
+
             await JournalService.SaveEntryAsync(entry);
             isEditing = false;
         }
     }
 
     private void GoBack() => Navigation.NavigateTo("/timeline");
+
     private void ViewEntry(int id) => Navigation.NavigateTo($"/timeline/{id}");
-    private void EditEntry(int id) => Navigation.NavigateTo($"/timeline/{id}");
+
+    private void EditEntry(int id)
+    {
+        Navigation.NavigateTo($"/timeline/{id}");
+        // isEditing will remain false until you click "Edit" button
+        // optionally, you could auto-enable edit here by setting a query param
+    }
 
     private async Task DeleteEntry(int id)
     {
@@ -271,7 +290,16 @@ else
         if (confirmed)
         {
             await JournalService.DeleteEntryAsync(id);
-            await LoadEntries();
+
+            if (EntryId.HasValue && EntryId.Value == id)
+            {
+                // go back to timeline if deleting currently viewed entry
+                Navigation.NavigateTo("/timeline");
+            }
+            else
+            {
+                await LoadEntries();
+            }
         }
     }
 }
