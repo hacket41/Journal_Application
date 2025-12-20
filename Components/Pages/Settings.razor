@@ -24,7 +24,8 @@
                 <div class="theme-selector">
                     @foreach (var theme in themes)
                     {
-                        <button class="theme-option @(selectedTheme == theme ? "active" : "")" @onclick="() => SelectTheme(theme)">
+                        <button class="theme-option @(selectedTheme == theme ? "active" : "")"
+                                @onclick="() => SelectTheme(theme)">
                             <div class="theme-preview @(theme)">
                                 <div class="preview-bar"></div>
                                 <div class="preview-content"></div>
@@ -63,14 +64,12 @@
                         <option value="@size">@size</option>
                     }
                 </select>
-
             </div>
         </div>
 
         <!-- Editor Preferences -->
         <div class="settings-section">
             <h2>✍️ Editor Preferences</h2>
-
             <div class="setting-item">
                 <div class="setting-info">
                     <h3>Auto-Save</h3>
@@ -108,7 +107,6 @@
         <!-- Data Management -->
         <div class="settings-section">
             <h2>💾 Data Management</h2>
-
             <div class="setting-item">
                 <div class="setting-info">
                     <h3>Export All Entries</h3>
@@ -138,8 +136,8 @@
 
 @code {
     // Appearance options
-    private string selectedTheme;
-    private string selectedAccent;
+    private string selectedTheme = "light";
+    private string selectedAccent = "#5e3a8e";
     private string selectedFontSize
     {
         get => _selectedFontSize;
@@ -154,7 +152,6 @@
     }
     private string _selectedFontSize = "Medium";
 
-
     private string[] themes = new[] { "light", "dark", "auto" };
     private string[] accentColors = new[] { "#5e3a8e", "#3b82f6", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6" };
     private string[] fontSizes = new[] { "Small", "Medium", "Large", "Extra Large" };
@@ -168,13 +165,15 @@
     {
         if (firstRender)
         {
-            // Load saved settings from JS
-            var settings = await JS.InvokeAsync<SettingsModel>("eval", "window.initialSettings");
+            // Load settings from JS
+            var settings = await JS.InvokeAsync<SettingsModel>("loadSettings");
+
+            // Set local C# variables
             selectedTheme = settings.theme;
             selectedAccent = settings.accent;
             selectedFontSize = settings.fontSize;
 
-            // Apply them in JS to be sure
+            // Apply them explicitly (just in case)
             await JS.InvokeVoidAsync("applyTheme", selectedTheme);
             await JS.InvokeVoidAsync("setAccentColor", selectedAccent);
             await JS.InvokeVoidAsync("setFontSize", selectedFontSize);
@@ -182,6 +181,7 @@
             StateHasChanged();
         }
     }
+
 
     private async Task SelectTheme(string theme)
     {
@@ -193,12 +193,6 @@
     {
         selectedAccent = color;
         await JS.InvokeVoidAsync("setAccentColor", color);
-    }
-
-    private async Task UpdateFontSize(ChangeEventArgs e)
-    {
-        selectedFontSize = e.Value?.ToString() ?? "Medium";
-        await JS.InvokeVoidAsync("setFontSize", selectedFontSize);
     }
 
     // Data Management placeholders
