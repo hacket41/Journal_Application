@@ -1,6 +1,7 @@
 ﻿@page "/today"
 @inject IJournalService JournalService
 @inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
 @using Journal.Models
 @using Journal.Services
 @using Microsoft.AspNetCore.Components.Web
@@ -108,21 +109,56 @@
 
             <div class="editor-section">
                 <div class="editor-toolbar">
-                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("**", "**"))"><strong>B</strong></button>
-                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("*", "*"))"><em>I</em></button>
-                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("<u>", "</u>"))"><u>U</u></button>
+                    <button class="toolbar-btn" @onclick="@(() => ApplyFormatting("bold"))" title="Bold"><strong>B</strong></button>
+                    <button class="toolbar-btn" @onclick="@(() => ApplyFormatting("italic"))" title="Italic"><em>I</em></button>
+                    <button class="toolbar-btn" @onclick="@(() => ApplyFormatting("strikethrough"))" title="Strikethrough"><s>S</s></button>
+                    <button class="toolbar-btn" @onclick="@(() => ApplyFormatting("code"))" title="Code">Code</button>
                     <div class="toolbar-divider"></div>
-                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("# ", ""))">H1</button>
-                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("- ", ""))">• List</button>
-                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("1. ", ""))">1. List</button>
+                    <button class="toolbar-btn" @onclick="@(() => ApplyFormatting("h1"))" title="Heading 1">H1</button>
+                    <button class="toolbar-btn" @onclick="@(() => ApplyFormatting("h2"))" title="Heading 2">H2</button>
+                    <button class="toolbar-btn" @onclick="@(() => ApplyFormatting("h3"))" title="Heading 3">H3</button>
                     <div class="toolbar-divider"></div>
-                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("[", "](url)"))">🔗</button>
-                    <button class="toolbar-btn" @onclick="@(() => InsertMarkdown("> ", ""))">❝</button>
+                    <button class="toolbar-btn" @onclick="@(() => ApplyFormatting("bullet"))" title="Bullet List">• List</button>
+                    <button class="toolbar-btn" @onclick="@(() => ApplyFormatting("numbered"))" title="Numbered List">1. List</button>
+                    <button class="toolbar-btn" @onclick="@(() => ApplyFormatting("checkbox"))" title="Checklist">☑ Task</button>
+                    <div class="toolbar-divider"></div>
+                    <button class="toolbar-btn" @onclick="@(() => ApplyFormatting("link"))" title="Insert Link">🔗</button>
+                    <button class="toolbar-btn" @onclick="@(() => ApplyFormatting("quote"))" title="Quote">❝</button>
+                    <button class="toolbar-btn" @onclick="@(() => ApplyFormatting("hr"))" title="Horizontal Line">━</button>
+                    <div class="toolbar-divider"></div>
+                    <button class="toolbar-btn @(showPreview ? "active" : "")" @onclick="TogglePreview" title="Toggle Preview">
+                        @(showPreview ? "✏️ Edit" : "👁️ Preview")
+                    </button>
                 </div>
 
-                <textarea class="content-editor"
-                          @bind="entry.Content"
-                          placeholder="Write your thoughts here..."></textarea>
+                <div class="editor-container">
+                    @if (!showPreview)
+                    {
+                        <textarea id="journalEditor" class="content-editor"
+                                  @ref="textareaRef"
+                                  @bind="entry.Content"
+                                  @bind:event="oninput"
+                                  placeholder="Write your thoughts here...
+                                  Markdown tips:
+                                  **bold** *italic* ~~strikethrough~~
+                                  # Heading 1
+                                  ## Heading 2
+                                  - Bullet list
+                                  1. Numbered list
+                                  - [ ] Checklist
+                                  [link](url)> Quote"></textarea>
+                    }
+                    else
+                    {
+                        <div class="markdown-preview">
+                            @((MarkupString)RenderMarkdown(entry.Content ?? ""))
+                        </div>
+                    }
+                </div>
+
+                <div class="editor-footer">
+                    <span class="word-count">@GetWordCount() words | @(entry.Content?.Length ?? 0) characters</span>
+                </div>
             </div>
 
             <div class="form-actions">
@@ -147,10 +183,142 @@
     }
 </div>
 
+<style>
+    .editor-section {
+        margin: 1.5rem 0;
+    }
+
+    .editor-toolbar {
+        display: flex;
+        gap: 0.25rem;
+        padding: 0.5rem;
+        background: #f5f5f5;
+        border: 1px solid #ddd;
+        border-bottom: none;
+        border-radius: 8px 8px 0 0;
+        flex-wrap: wrap;
+    }
+
+    .toolbar-btn {
+        padding: 0.5rem 0.75rem;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: all 0.2s;
+    }
+
+        .toolbar-btn:hover {
+            background: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        .toolbar-btn.active {
+            background: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+
+    .toolbar-divider {
+        width: 1px;
+        background: #ddd;
+        margin: 0 0.5rem;
+    }
+
+    .editor-container {
+        position: relative;
+    }
+
+    .content-editor {
+        width: 100%;
+        min-height: 400px;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 0 0 8px 8px;
+        font-family: 'Courier New', monospace;
+        font-size: 1rem;
+        line-height: 1.6;
+        resize: vertical;
+    }
+
+    .markdown-preview {
+        width: 100%;
+        min-height: 400px;
+        padding: 1rem;
+        border: 1px solid #ddd;
+        border-radius: 0 0 8px 8px;
+        background: white;
+        line-height: 1.6;
+        overflow-y: auto;
+    }
+
+        .markdown-preview h1 {
+            font-size: 2rem;
+            margin: 1rem 0 0.5rem;
+        }
+
+        .markdown-preview h2 {
+            font-size: 1.5rem;
+            margin: 1rem 0 0.5rem;
+        }
+
+        .markdown-preview h3 {
+            font-size: 1.25rem;
+            margin: 1rem 0 0.5rem;
+        }
+
+        .markdown-preview ul, .markdown-preview ol {
+            margin: 0.5rem 0;
+            padding-left: 2rem;
+        }
+
+        .markdown-preview blockquote {
+            border-left: 4px solid #ddd;
+            padding-left: 1rem;
+            margin: 1rem 0;
+            color: #666;
+        }
+
+        .markdown-preview code {
+            background: #f5f5f5;
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+
+        .markdown-preview hr {
+            border: none;
+            border-top: 2px solid #ddd;
+            margin: 1rem 0;
+        }
+
+        .markdown-preview a {
+            color: #007bff;
+            text-decoration: underline;
+        }
+
+    .editor-footer {
+        padding: 0.5rem;
+        background: #f8f9fa;
+        border: 1px solid #ddd;
+        border-top: none;
+        border-radius: 0 0 8px 8px;
+        font-size: 0.85rem;
+        color: #666;
+    }
+
+    .word-count {
+        display: inline-block;
+    }
+</style>
+
 @code {
     private JournalEntry entry = new();
     private bool isLoading = true;
     private bool isSaving = false;
+    private bool showPreview = false;
+    private ElementReference textareaRef;
 
     private List<string> selectedTags = new();
     private string newTag = "";
@@ -179,6 +347,140 @@
             selectedTags = entry.Tags.Split(',').Select(t => t.Trim()).ToList();
 
         isLoading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeVoidAsync("eval", @"
+                window.insertTextAtCursor = function(text, textareaId) {
+                    const textarea = document.getElementById(textareaId);
+                    if (!textarea) return;
+
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+                    const currentValue = textarea.value;
+
+                    textarea.value = currentValue.substring(0, start) + text + currentValue.substring(end);
+
+                    // Set cursor position after inserted text
+                    const newPos = start + text.length;
+                    textarea.selectionStart = newPos;
+                    textarea.selectionEnd = newPos;
+                    textarea.focus();
+
+                    // Trigger input event for Blazor binding
+                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                };
+
+                window.wrapSelectedText = function(prefix, suffix, textareaId) {
+                    const textarea = document.getElementById(textareaId);
+                    if (!textarea) return;
+
+                    const start = textarea.selectionStart;
+                    const end = textarea.selectionEnd;
+                    const selectedText = textarea.value.substring(start, end);
+                    const currentValue = textarea.value;
+
+                    if (selectedText) {
+                        // Wrap selected text
+                        const wrapped = prefix + selectedText + suffix;
+                        textarea.value = currentValue.substring(0, start) + wrapped + currentValue.substring(end);
+
+                        // Select the wrapped text
+                        textarea.selectionStart = start;
+                        textarea.selectionEnd = start + wrapped.length;
+                    } else {
+                        // Insert placeholder with formatting
+                        const placeholder = prefix + 'text' + suffix;
+                        textarea.value = currentValue.substring(0, start) + placeholder + currentValue.substring(end);
+
+                        // Select 'text' for easy replacement
+                        textarea.selectionStart = start + prefix.length;
+                        textarea.selectionEnd = start + prefix.length + 4;
+                    }
+
+                    textarea.focus();
+                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                };
+
+                window.insertLinePrefix = function(prefix, textareaId) {
+                    const textarea = document.getElementById(textareaId);
+                    if (!textarea) return;
+
+                    const start = textarea.selectionStart;
+                    const currentValue = textarea.value;
+
+                    // Find start of current line
+                    let lineStart = start;
+                    while (lineStart > 0 && currentValue[lineStart - 1] !== '\\n') {
+                        lineStart--;
+                    }
+
+                    // Insert prefix at line start
+                    textarea.value = currentValue.substring(0, lineStart) + prefix + currentValue.substring(lineStart);
+
+                    // Move cursor
+                    const newPos = start + prefix.length;
+                    textarea.selectionStart = newPos;
+                    textarea.selectionEnd = newPos;
+                    textarea.focus();
+
+                    textarea.dispatchEvent(new Event('input', { bubbles: true }));
+                };
+            ");
+        }
+    }
+
+    private async Task ApplyFormatting(string type)
+    {
+        switch (type)
+        {
+            case "bold":
+                await JSRuntime.InvokeVoidAsync("wrapSelectedText", "**", "**", "journalEditor");
+                break;
+            case "italic":
+                await JSRuntime.InvokeVoidAsync("wrapSelectedText", "*", "*", "journalEditor");
+                break;
+            case "strikethrough":
+                await JSRuntime.InvokeVoidAsync("wrapSelectedText", "~~", "~~", "journalEditor");
+                break;
+            case "code":
+                await JSRuntime.InvokeVoidAsync("wrapSelectedText", "`", "`", "journalEditor");
+                break;
+            case "h1":
+                await JSRuntime.InvokeVoidAsync("insertLinePrefix", "# ", "journalEditor");
+                break;
+            case "h2":
+                await JSRuntime.InvokeVoidAsync("insertLinePrefix", "## ", "journalEditor");
+                break;
+            case "h3":
+                await JSRuntime.InvokeVoidAsync("insertLinePrefix", "### ", "journalEditor");
+                break;
+            case "bullet":
+                await JSRuntime.InvokeVoidAsync("insertTextAtCursor", "\n- Item 1\n- Item 2\n- Item 3\n", "journalEditor");
+                break;
+            case "numbered":
+                await JSRuntime.InvokeVoidAsync("insertTextAtCursor", "\n1. Item 1\n2. Item 2\n3. Item 3\n", "journalEditor");
+                break;
+            case "checkbox":
+                await JSRuntime.InvokeVoidAsync("insertTextAtCursor", "\n- [ ] Task 1\n- [ ] Task 2\n", "journalEditor");
+                break;
+            case "link":
+                await JSRuntime.InvokeVoidAsync("wrapSelectedText", "[", "](https://example.com)", "journalEditor");
+                break;
+            case "quote":
+                await JSRuntime.InvokeVoidAsync("insertLinePrefix", "> ", "journalEditor");
+                break;
+            case "hr":
+                await JSRuntime.InvokeVoidAsync("insertTextAtCursor", "\n---\n", "journalEditor");
+                break;
+        }
+
+        // Update the bound value
+        await Task.Delay(50);
+        StateHasChanged();
     }
 
     private void SetPrimaryMood(string mood) => entry.PrimaryMood = mood;
@@ -219,6 +521,64 @@
         }
     }
 
+    private void TogglePreview() => showPreview = !showPreview;
+
+    private string RenderMarkdown(string markdown)
+    {
+        if (string.IsNullOrWhiteSpace(markdown))
+            return "<p><em>Nothing written yet...</em></p>";
+
+        var html = System.Web.HttpUtility.HtmlEncode(markdown);
+
+        // Headers (must be done before other formatting)
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"^### (.+)$", "<h3>$1</h3>", System.Text.RegularExpressions.RegexOptions.Multiline);
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"^## (.+)$", "<h2>$1</h2>", System.Text.RegularExpressions.RegexOptions.Multiline);
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"^# (.+)$", "<h1>$1</h1>", System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        // Bold, Italic, Strikethrough, Code
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"\*\*(.+?)\*\*", "<strong>$1</strong>");
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"\*(.+?)\*", "<em>$1</em>");
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"~~(.+?)~~", "<del>$1</del>");
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"`(.+?)`", "<code>$1</code>");
+
+        // Links
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"\[(.+?)\]\((.+?)\)", "<a href='$2' target='_blank'>$1</a>");
+
+        // Horizontal rules
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"^---+$", "<hr>", System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        // Blockquotes
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"^&gt; (.+)$", "<blockquote>$1</blockquote>", System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        // Checkboxes
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"^- \[ \] (.+)$", "<li style='list-style: none;'>☐ $1</li>", System.Text.RegularExpressions.RegexOptions.Multiline);
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"^- \[x\] (.+)$", "<li style='list-style: none;'>☑ $1</li>", System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        // Bullet lists
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"^- (.+)$", "<li>$1</li>", System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        // Numbered lists
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"^\d+\. (.+)$", "<li>$1</li>", System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        // Wrap consecutive <li> in <ul>
+        html = System.Text.RegularExpressions.Regex.Replace(html, @"(<li(?:\s[^>]*)?>.*?</li>\r?\n?)+", "<ul>$0</ul>");
+
+        // Line breaks
+        html = html.Replace("\r\n", "<br>").Replace("\n", "<br>");
+
+        return html;
+    }
+
+    private int GetWordCount()
+    {
+        if (string.IsNullOrWhiteSpace(entry.Content))
+            return 0;
+
+        return entry.Content
+            .Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries)
+            .Length;
+    }
+
     private async Task SaveEntry()
     {
         if (string.IsNullOrWhiteSpace(entry.Content)) return;
@@ -239,7 +599,4 @@
             Navigation.NavigateTo("/");
         }
     }
-
-    private void InsertMarkdown(string prefix, string suffix)
-        => entry.Content += $"\n{prefix}Your text here{suffix}\n";
 }

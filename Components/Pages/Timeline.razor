@@ -62,7 +62,11 @@ else if (EntryId.HasValue)
                 }
                 else
                 {
-                    <p>@entry.Content</p>
+                    @* Render markdown instead of plain text *@
+                    <div class="markdown-content">
+                        @((MarkupString)RenderMarkdown(entry.Content ?? ""))
+                    </div>
+
                     @if (!string.IsNullOrWhiteSpace(entry.Tags))
                     {
                         <p>
@@ -133,7 +137,10 @@ else
                                     <span class="time">@e.CreatedDate.ToLocalTime().ToString("h:mm tt")</span>
                                 </div>
                             </div>
-                            <p class="entry-excerpt">@GetExcerpt(e.Content)</p>
+                            @* Render markdown excerpt instead of plain text *@
+                            <div class="entry-excerpt markdown-content">
+                                @((MarkupString)RenderMarkdown(GetExcerpt(e.Content, 200)))
+                            </div>
                             <div class="entry-tags">
                                 @if (!string.IsNullOrWhiteSpace(e.Tags))
                                 {
@@ -156,6 +163,8 @@ else
     </div>
 }
 
+
+
 @code {
     [Parameter] public int? EntryId { get; set; }
 
@@ -173,7 +182,6 @@ else
         "Curious","Nostalgic","Bored","Sad","Angry","Stressed","Lonely","Anxious"
     };
 
-    // ✅ This runs whenever the route parameter changes
     protected override async Task OnParametersSetAsync()
     {
         isLoading = true;
@@ -181,7 +189,7 @@ else
         if (EntryId.HasValue)
         {
             await LoadEntry(EntryId.Value);
-            isEditing = false; // default to view mode
+            isEditing = false;
         }
         else
         {
@@ -228,6 +236,99 @@ else
         return content.Length <= length ? content : content.Substring(0, length) + "...";
     }
 
+    private string RenderMarkdown(string markdown)
+    {
+        if (string.IsNullOrWhiteSpace(markdown))
+            return "<p><em>No content</em></p>";
+
+        var html = System.Web.HttpUtility.HtmlEncode(markdown);
+
+        // Headers
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"^### (.+)$", "<h3>$1</h3>",
+            System.Text.RegularExpressions.RegexOptions.Multiline);
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"^## (.+)$", "<h2>$1</h2>",
+            System.Text.RegularExpressions.RegexOptions.Multiline);
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"^# (.+)$", "<h1>$1</h1>",
+            System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        // Bold
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"\*\*(.+?)\*\*", "<strong>$1</strong>");
+
+        // Italic
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"\*(.+?)\*", "<em>$1</em>");
+
+        // Strikethrough
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"~~(.+?)~~", "<del>$1</del>");
+
+        // Code
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"`(.+?)`", "<code>$1</code>");
+
+        // Links
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"\[([^\]]+)\]\(([^\)]+)\)", "<a href='$2' target='_blank'>$1</a>");
+
+        // Horizontal rules
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"^---+$", "<hr>",
+            System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        // Blockquotes
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"^&gt; (.+)$", "<blockquote>$1</blockquote>",
+            System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        // Checkboxes
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"^- \[ \] (.+)$", "<li style='list-style: none;'>☐ $1</li>",
+            System.Text.RegularExpressions.RegexOptions.Multiline);
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"^- \[x\] (.+)$", "<li style='list-style: none;'>☑ $1</li>",
+            System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        // Bullet lists
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"^- (.+)$", "<li>$1</li>",
+            System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        // Numbered lists
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"^\d+\. (.+)$", "<li>$1</li>",
+            System.Text.RegularExpressions.RegexOptions.Multiline);
+
+        // Wrap lists
+        html = System.Text.RegularExpressions.Regex.Replace(html,
+            @"(<li(?:\s[^>]*)?>.*?</li>(?:\r?\n)?)+", "<ul>$0</ul>");
+
+        // Line breaks
+        var lines = html.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+        var processed = new System.Text.StringBuilder();
+
+        foreach (var line in lines)
+        {
+            if (string.IsNullOrWhiteSpace(line))
+            {
+                processed.AppendLine("<br>");
+            }
+            else if (!line.TrimStart().StartsWith("<"))
+            {
+                processed.AppendLine($"<p>{line}</p>");
+            }
+            else
+            {
+                processed.AppendLine(line);
+            }
+        }
+
+        return processed.ToString();
+    }
+
     private string GetMoodEmoji(string mood) => mood switch
     {
         "Happy" => "😊",
@@ -262,7 +363,6 @@ else
     {
         if (entry != null)
         {
-            // ✅ Only set CreatedDate if creating new
             if (entry.Id == 0)
             {
                 entry.CreatedDate = DateTime.UtcNow;
@@ -280,8 +380,6 @@ else
     private void EditEntry(int id)
     {
         Navigation.NavigateTo($"/timeline/{id}");
-        // isEditing will remain false until you click "Edit" button
-        // optionally, you could auto-enable edit here by setting a query param
     }
 
     private async Task DeleteEntry(int id)
@@ -293,7 +391,6 @@ else
 
             if (EntryId.HasValue && EntryId.Value == id)
             {
-                // go back to timeline if deleting currently viewed entry
                 Navigation.NavigateTo("/timeline");
             }
             else

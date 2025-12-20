@@ -200,67 +200,102 @@
         background: #f3f4f6;
     }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1rem;
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 2px solid #f3f4f6;
+/* Markdown content styling */
+.markdown-content {
+    line-height: 1.6;
+    color: #333;
 }
 
-.page-btn {
-    padding: 0.5rem 1rem;
-    background: white;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-
-    .page-btn:hover:not(:disabled) {
-        background: #f9fafb;
-        border-color: #5e3a8e;
+    .markdown-content h1 {
+        font-size: 2rem;
+        font-weight: bold;
+        margin: 1.5rem 0 0.75rem;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 0.3rem;
     }
 
-    .page-btn:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
+    .markdown-content h2 {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin: 1.25rem 0 0.5rem;
     }
 
-.page-numbers {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.page-num {
-    width: 40px;
-    height: 40px;
-    background: white;
-    border: 2px solid #e5e7eb;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-
-    .page-num:hover {
-        border-color: #5e3a8e;
+    .markdown-content h3 {
+        font-size: 1.25rem;
+        font-weight: bold;
+        margin: 1rem 0 0.5rem;
     }
 
-    .page-num.active {
-        background: #5e3a8e;
-        color: white;
-        border-color: #5e3a8e;
+    .markdown-content p {
+        margin: 0.75rem 0;
     }
 
-.page-dots {
-    color: #666;
-    font-weight: 700;
+    .markdown-content strong {
+        font-weight: bold;
+        color: #000;
+    }
+
+    .markdown-content em {
+        font-style: italic;
+    }
+
+    .markdown-content del {
+        text-decoration: line-through;
+        color: #666;
+    }
+
+    .markdown-content code {
+        background: #f5f5f5;
+        padding: 0.2rem 0.4rem;
+        border-radius: 3px;
+        font-family: 'Courier New', Consolas, monospace;
+        font-size: 0.9em;
+        color: #d63384;
+    }
+
+    .markdown-content ul, .markdown-content ol {
+        margin: 0.75rem 0;
+        padding-left: 2rem;
+    }
+
+    .markdown-content li {
+        margin: 0.25rem 0;
+    }
+
+    .markdown-content blockquote {
+        border-left: 4px solid #ddd;
+        padding-left: 1rem;
+        margin: 1rem 0;
+        color: #666;
+        font-style: italic;
+    }
+
+    .markdown-content a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+        .markdown-content a:hover {
+            text-decoration: underline;
+        }
+
+    .markdown-content hr {
+        border: none;
+        border-top: 2px solid #e0e0e0;
+        margin: 1.5rem 0;
+    }
+
+/* Adjust markdown in excerpts to be more compact */
+.entry-excerpt.markdown-content h1,
+.entry-excerpt.markdown-content h2,
+.entry-excerpt.markdown-content h3 {
+    font-size: 1rem;
+    margin: 0.25rem 0;
+    border-bottom: none;
 }
 
+.entry-excerpt.markdown-content p {
+    margin: 0.25rem 0;
+}
 
 </style >
