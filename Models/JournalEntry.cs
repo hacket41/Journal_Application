@@ -21,8 +21,9 @@ namespace Journal.Models
 
         [Required]
         public string PrimaryMood { get; set; } = "Neutral";
-
         public string? SecondaryMoods { get; set; } 
+
+        public string? MoodCategory { get; set; }
         public string? Category { get; set; }
         public string? Tags { get; set; } 
     }
