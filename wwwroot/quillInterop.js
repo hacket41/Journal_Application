@@ -1,16 +1,16 @@
 (function () {
+    let quill = null;
+
     window.initQuill = function (content) {
-        if (window._quillInstance) {
-            return;
-        }
+        if (quill) return;
 
         const editor = document.getElementById("quillEditor");
         if (!editor) {
-            console.error("quillEditor div not found");
+            console.error("quillEditor not found");
             return;
         }
 
-        window._quillInstance = new Quill(editor, {
+        quill = new Quill(editor, {
             theme: "snow",
             placeholder: "Write your thoughts...",
             modules: {
@@ -26,13 +26,11 @@
         });
 
         if (content) {
-            window._quillInstance.root.innerHTML = content;
+            quill.root.innerHTML = content;
         }
     };
 
     window.getQuillContent = function () {
-        return window._quillInstance
-            ? window._quillInstance.root.innerHTML
-            : "";
+        return quill ? quill.root.innerHTML : "";
     };
 })();
