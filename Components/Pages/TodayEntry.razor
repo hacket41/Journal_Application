@@ -150,12 +150,13 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (firstRender && !quillReady)
         {
             await JSRuntime.InvokeVoidAsync("initQuill", entry.Content ?? "");
             quillReady = true;
         }
     }
+
 
     private async Task SaveEntry()
     {
@@ -170,6 +171,8 @@
         await JournalService.SaveEntryAsync(entry);
         Navigation.NavigateTo("/");
     }
+
+
 
     private void ToggleSecondaryMood(string mood)
     {
