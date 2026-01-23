@@ -2,6 +2,7 @@
 @inject JournalService JournalService
 @inject AuthService AuthService
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 <PageTitle>Timeline - My Journal</PageTitle>
 
@@ -86,10 +87,12 @@
                             {
                                 <span class="mood-badge secondary">@entry.SecondaryMood1</span>
                             }
+
                             @if (!string.IsNullOrEmpty(entry.SecondaryMood2))
                             {
                                 <span class="mood-badge secondary">@entry.SecondaryMood2</span>
                             }
+
                         </div>
 
                         @if (entry.GetTags().Any())
@@ -106,6 +109,11 @@
 
                         <div class="entry-meta">
                             @entry.WordCount words • @entry.CreatedAt.ToString("g")
+                        </div>
+
+                        <div class="entry-actions">
+                            <button class="btn btn-sm btn-warning" @onclick="() => EditEntry(entry)">Edit</button>
+                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteEntry(entry)">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -151,12 +159,7 @@
     private async Task LoadData()
     {
         allEntries = await JournalService.GetAllEntriesAsync();
-        allTags = allEntries
-            .SelectMany(e => e.GetTags())
-            .Distinct()
-            .OrderBy(t => t)
-            .ToList();
-
+        allTags = allEntries.SelectMany(e => e.GetTags()).Distinct().OrderBy(t => t).ToList();
         filteredEntries = allEntries;
         UpdatePagination();
     }
@@ -166,35 +169,22 @@
         totalPages = (int)Math.Ceiling(filteredEntries.Count / (double)pageSize);
         currentPage = Math.Max(1, Math.Min(currentPage, totalPages));
 
-        displayedEntries = filteredEntries
-            .Skip((currentPage - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
+        displayedEntries = filteredEntries.Skip((currentPage - 1) * pageSize).Take(pageSize).ToList();
     }
 
     private async Task ApplyFilters()
     {
-        filteredEntries = allEntries;
+        filteredEntries = await JournalService.FilterEntriesAsync(startDate, endDate,
+            string.IsNullOrWhiteSpace(selectedMoodFilter) ? null : new List<string> { selectedMoodFilter },
+            string.IsNullOrWhiteSpace(selectedTagFilter) ? null : new List<string> { selectedTagFilter });
 
         if (!string.IsNullOrWhiteSpace(searchTerm))
         {
-            filteredEntries = await JournalService.SearchEntriesAsync(searchTerm);
+            filteredEntries = filteredEntries.Where(e =>
+                e.Title.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                e.Content.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)
+            ).ToList();
         }
-
-        var moods = string.IsNullOrWhiteSpace(selectedMoodFilter)
-            ? null
-            : new List<string> { selectedMoodFilter };
-
-        var tags = string.IsNullOrWhiteSpace(selectedTagFilter)
-            ? null
-            : new List<string> { selectedTagFilter };
-
-        filteredEntries = await JournalService.FilterEntriesAsync(
-            startDate,
-            endDate,
-            moods,
-            tags
-        );
 
         currentPage = 1;
         UpdatePagination();
@@ -207,14 +197,10 @@
         endDate = null;
         selectedMoodFilter = "";
         selectedTagFilter = "";
-
         await ApplyFilters();
     }
 
-    private void ToggleFilters()
-    {
-        showFilters = !showFilters;
-    }
+    private void ToggleFilters() => showFilters = !showFilters;
 
     private void NextPage()
     {
@@ -234,14 +220,26 @@
         }
     }
 
-    private string GetMoodClass(JournalEntry entry)
-    {
-        return entry.GetMoodCategory().ToString().ToLower();
-    }
+    private string GetMoodClass(JournalEntry entry) => entry.GetMoodCategory().ToString().ToLower();
 
     private string GetPreview(string content)
     {
         var preview = System.Text.RegularExpressions.Regex.Replace(content, "<.*?>", string.Empty);
         return preview.Length > 200 ? preview.Substring(0, 200) + "..." : preview;
+    }
+
+    private async Task EditEntry(JournalEntry entry)
+    {
+        Navigation.NavigateTo($"/edit/{entry.Id}");
+    }
+
+    private async Task DeleteEntry(JournalEntry entry)
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this entry?");
+        if (confirmed)
+        {
+            await JournalService.DeleteEntryAsync(entry.Id);
+            await LoadData();
+        }
     }
 }

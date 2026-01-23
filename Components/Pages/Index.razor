@@ -16,54 +16,23 @@
     <div class="write-header">
         <div class="header-content">
             <h2>@DateTime.Today.ToString("dddd, MMMM d, yyyy")</h2>
-            <p class="header-subtitle">@(existingEntry != null ? "Update your entry" : "Start writing today's entry")</p>
+            <p class="header-subtitle">Start writing today's entry</p>
         </div>
-        @if (existingEntry != null)
-        {
-            <button class="btn btn-danger" @onclick="DeleteEntry">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="3 6 5 6 21 6"></polyline>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                    <line x1="14" y1="11" x2="14" y2="17"></line>
-                </svg>
-                Delete Entry
-            </button>
-        }
     </div>
 
     <div class="form-group">
-        <label>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="label-icon">
-                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
-            </svg>
-            Title (Optional)
-        </label>
+        <label>Title (Optional)</label>
         <input type="text" @bind="title" class="form-input" placeholder="Give your entry a title..." />
     </div>
 
     <div class="form-group">
-        <label>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="label-icon">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-            </svg>
-            Content *
-        </label>
+        <label>Content *</label>
         <div id="editor" style="height: 300px;"></div>
     </div>
 
     <div class="form-row">
         <div class="form-group">
-            <label>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="label-icon">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
-                    <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                    <line x1="15" y1="9" x2="15.01" y2="9"></line>
-                </svg>
-                Primary Mood *
-            </label>
+            <label>Primary Mood *</label>
             <select @bind="primaryMood" class="form-select">
                 <option value="">Select mood...</option>
                 @foreach (var category in MoodDefinitions.Moods)
@@ -79,15 +48,7 @@
         </div>
 
         <div class="form-group">
-            <label>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="label-icon">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M8 15h8"></path>
-                    <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                    <line x1="15" y1="9" x2="15.01" y2="9"></line>
-                </svg>
-                Secondary Mood 1
-            </label>
+            <label>Secondary Mood 1</label>
             <select @bind="secondaryMood1" class="form-select">
                 <option value="">None</option>
                 @foreach (var mood in MoodDefinitions.GetAllMoods())
@@ -98,15 +59,7 @@
         </div>
 
         <div class="form-group">
-            <label>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="label-icon">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <path d="M8 15h8"></path>
-                    <line x1="9" y1="9" x2="9.01" y2="9"></line>
-                    <line x1="15" y1="9" x2="15.01" y2="9"></line>
-                </svg>
-                Secondary Mood 2
-            </label>
+            <label>Secondary Mood 2</label>
             <select @bind="secondaryMood2" class="form-select">
                 <option value="">None</option>
                 @foreach (var mood in MoodDefinitions.GetAllMoods())
@@ -118,23 +71,12 @@
     </div>
 
     <div class="form-group">
-        <label>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="label-icon">
-                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-            </svg>
-            Category
-        </label>
+        <label>Category</label>
         <input type="text" @bind="category" class="form-input" placeholder="e.g., Personal, Work, Health..." />
     </div>
 
     <div class="form-group">
-        <label>
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="label-icon">
-                <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
-                <line x1="7" y1="7" x2="7.01" y2="7"></line>
-            </svg>
-            Tags
-        </label>
+        <label>Tags</label>
 
         @if (selectedTags.Any())
         {
@@ -143,12 +85,7 @@
                 {
                     <span class="tag">
                         @tag
-                        <button @onclick="() => RemoveTag(tag)" title="Remove tag">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="18" y1="6" x2="6" y2="18"></line>
-                                <line x1="6" y1="6" x2="18" y2="18"></line>
-                            </svg>
-                        </button>
+                        <button @onclick="() => RemoveTag(tag)">x</button>
                     </span>
                 }
             </div>
@@ -156,69 +93,21 @@
 
         <div class="tag-input-row">
             <input type="text" @bind="newTag" @onkeypress="HandleTagKeyPress" class="form-input" placeholder="Add custom tag and press Enter..." />
-            <button class="btn btn-secondary" @onclick="AddCustomTag">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                Add
-            </button>
+            <button class="btn btn-secondary" @onclick="AddCustomTag">Add</button>
         </div>
-
-        @if (PredefinedTags.Tags.Where(t => !selectedTags.Contains(t)).Any())
-        {
-            <div class="predefined-tags-label">Suggested tags:</div>
-            <div class="predefined-tags">
-                @foreach (var tag in PredefinedTags.Tags.Where(t => !selectedTags.Contains(t)).Take(15))
-                {
-                    <button class="tag-btn" @onclick="() => AddTag(tag)">
-                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        @tag
-                    </button>
-                }
-            </div>
-        }
     </div>
 
     <div class="action-buttons">
-        <button class="btn btn-primary" @onclick="SaveEntry">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                <polyline points="7 3 7 8 15 8"></polyline>
-            </svg>
-            @(existingEntry != null ? "Update Entry" : "Save Entry")
-        </button>
+        <button class="btn btn-primary" @onclick="SaveEntry">Save Entry</button>
     </div>
 
     @if (!string.IsNullOrEmpty(message))
     {
-        <div class="@(isError ? "error-message" : "success-message")">
-            @if (!isError)
-            {
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
-            }
-            else
-            {
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
-            }
-            @message
-        </div>
+        <div class="@(isError ? "error-message" : "success-message")">@message</div>
     }
 </div>
 
 @code {
-    private JournalEntry? existingEntry;
     private string title = "";
     private string primaryMood = "";
     private string? secondaryMood1;
@@ -229,35 +118,18 @@
     private string message = "";
     private bool isError = false;
 
-    protected override async Task OnInitializedAsync()
-    {
-        existingEntry = await JournalService.GetTodayEntryAsync();
-
-        if (existingEntry != null)
-        {
-            title = existingEntry.Title;
-            primaryMood = existingEntry.PrimaryMood;
-            secondaryMood1 = existingEntry.SecondaryMood1;
-            secondaryMood2 = existingEntry.SecondaryMood2;
-            category = existingEntry.Category;
-            selectedTags = existingEntry.GetTags();
-        }
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("initQuill", existingEntry?.Content ?? "");
+            await JS.InvokeVoidAsync("initQuill", "");
         }
     }
 
     private void AddTag(string tag)
     {
         if (!selectedTags.Contains(tag))
-        {
             selectedTags.Add(tag);
-        }
     }
 
     private void RemoveTag(string tag)
@@ -303,61 +175,29 @@
             return;
         }
 
-        if (existingEntry != null)
+        var entry = new JournalEntry
         {
-            existingEntry.Title = title;
-            existingEntry.Content = content;
-            existingEntry.PrimaryMood = primaryMood;
-            existingEntry.SecondaryMood1 = string.IsNullOrWhiteSpace(secondaryMood1) ? null : secondaryMood1;
-            existingEntry.SecondaryMood2 = string.IsNullOrWhiteSpace(secondaryMood2) ? null : secondaryMood2;
-            existingEntry.Category = category;
-            existingEntry.SetTags(selectedTags);
+            Date = DateTime.Today,
+            Title = title,
+            Content = content,
+            PrimaryMood = primaryMood,
+            SecondaryMood1 = string.IsNullOrWhiteSpace(secondaryMood1) ? null : secondaryMood1,
+            SecondaryMood2 = string.IsNullOrWhiteSpace(secondaryMood2) ? null : secondaryMood2,
+            Category = category
+        };
+        entry.SetTags(selectedTags);
 
-            await JournalService.UpdateEntryAsync(existingEntry);
-            message = "Entry updated successfully!";
-        }
-        else
-        {
-            var entry = new JournalEntry
-            {
-                Date = DateTime.Today,
-                Title = title,
-                Content = content,
-                PrimaryMood = primaryMood,
-                SecondaryMood1 = string.IsNullOrWhiteSpace(secondaryMood1) ? null : secondaryMood1,
-                SecondaryMood2 = string.IsNullOrWhiteSpace(secondaryMood2) ? null : secondaryMood2,
-                Category = category
-            };
-            entry.SetTags(selectedTags);
+        await JournalService.CreateEntryAsync(entry);
 
-            await JournalService.CreateEntryAsync(entry);
-            existingEntry = entry;
-            message = "Entry saved successfully!";
-        }
-    }
+        // Clear form
+        title = "";
+        primaryMood = "";
+        secondaryMood1 = null;
+        secondaryMood2 = null;
+        category = null;
+        selectedTags.Clear();
+        await JS.InvokeVoidAsync("clearQuill");
 
-    private async Task DeleteEntry()
-    {
-        if (existingEntry != null)
-        {
-            var confirmed = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this entry?");
-
-            if (confirmed)
-            {
-                await JournalService.DeleteEntryAsync(existingEntry.Id);
-
-                // Reset form
-                existingEntry = null;
-                title = "";
-                primaryMood = "";
-                secondaryMood1 = null;
-                secondaryMood2 = null;
-                category = null;
-                selectedTags.Clear();
-
-                await JS.InvokeVoidAsync("clearQuill");
-                message = "Entry deleted successfully";
-            }
-        }
+        message = "Entry saved successfully!";
     }
 }
