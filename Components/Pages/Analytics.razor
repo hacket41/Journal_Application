@@ -1,0 +1,198 @@
+﻿@page "/analytics"
+@inject AnalyticsService AnalyticsService
+@inject ExportService ExportService
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<PageTitle>Analytics - My Journal</PageTitle>
+
+@if (!AuthService.IsAuthenticated)
+{
+    Navigation.NavigateTo("/login");
+    return;
+}
+
+<div class="analytics-container">
+    <div class="analytics-header">
+        <h2>📊 Journal Analytics</h2>
+        <button class="btn btn-primary" @onclick="ExportPdf">📄 Export PDF</button>
+    </div>
+
+    <div class="date-filter">
+        <div class="form-group">
+            <label>Start Date</label>
+            <input type="date" @bind="startDate" class="form-input" />
+        </div>
+        <div class="form-group">
+            <label>End Date</label>
+            <input type="date" @bind="endDate" class="form-input" />
+        </div>
+        <button class="btn btn-secondary" @onclick="LoadAnalytics">Update</button>
+        <button class="btn btn-secondary" @onclick="ShowAllTime">All Time</button>
+    </div>
+
+    @if (analytics != null)
+    {
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-content">
+                    <div class="stat-value">@analytics.StreakInfo.CurrentStreak</div>
+                    <div class="stat-label">Current Streak</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-content">
+                    <div class="stat-value">@analytics.StreakInfo.LongestStreak</div>
+                    <div class="stat-label">Longest Streak</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-content">
+                    <div class="stat-value">@analytics.StreakInfo.MissedDays.Count</div>
+                    <div class="stat-label">Missed Days (30d)</div>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-icon">😊</div>
+                <div class="stat-content">
+                    <div class="stat-value">@(analytics.MostFrequentMood ?? "N/A")</div>
+                    <div class="stat-label">Most Frequent Mood</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>Mood Distribution</h3>
+                <div class="mood-bars">
+                    <div class="mood-bar-item">
+                        <div class="mood-bar-label">😊 Positive</div>
+                        <div class="mood-bar-container">
+                            <div class="mood-bar positive" style="width: @(analytics.MoodDistribution.PositivePercent)%"></div>
+                        </div>
+                        <div class="mood-bar-value">@analytics.MoodDistribution.PositiveCount (@analytics.MoodDistribution.PositivePercent.ToString("F1")%)</div>
+                    </div>
+                    <div class="mood-bar-item">
+                        <div class="mood-bar-label">😐 Neutral</div>
+                        <div class="mood-bar-container">
+                            <div class="mood-bar neutral" style="width: @(analytics.MoodDistribution.NeutralPercent)%"></div>
+                        </div>
+                        <div class="mood-bar-value">@analytics.MoodDistribution.NeutralCount (@analytics.MoodDistribution.NeutralPercent.ToString("F1")%)</div>
+                    </div>
+                    <div class="mood-bar-item">
+                        <div class="mood-bar-label">😔 Negative</div>
+                        <div class="mood-bar-container">
+                            <div class="mood-bar negative" style="width: @(analytics.MoodDistribution.NegativePercent)%"></div>
+                        </div>
+                        <div class="mood-bar-value">@analytics.MoodDistribution.NegativeCount (@analytics.MoodDistribution.NegativePercent.ToString("F1")%)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <h3>Most Used Tags</h3>
+                @if (analytics.MostUsedTags.Any())
+                {
+                    <div class="tags-chart">
+                        @foreach (var tagUsage in analytics.MostUsedTags.Take(10))
+                        {
+                            <div class="tag-bar-item">
+                                <div class="tag-label">@tagUsage.Tag</div>
+                                <div class="tag-bar-container">
+                                    <div class="tag-bar" style="width: @((tagUsage.Count * 100.0 / analytics.MostUsedTags.First().Count))%"></div>
+                                </div>
+                                <div class="tag-count">@tagUsage.Count</div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p>No tags used yet</p>
+                }
+            </div>
+        </div>
+
+        @if (analytics.WordCountTrends.Any())
+        {
+            <div class="chart-card full-width">
+                <h3>Word Count Trends</h3>
+                <div class="word-count-chart">
+                    @foreach (var trend in analytics.WordCountTrends.OrderBy(t => t.Date))
+                    {
+                        var maxCount = analytics.WordCountTrends.Max(t => t.AverageWordCount);
+                        var height = maxCount > 0 ? (trend.AverageWordCount / maxCount * 200) : 0;
+
+                        <div class="word-count-bar-container">
+                            <div class="word-count-bar" style="height: @(height)px;" title="@trend.AverageWordCount.ToString("F0") words">
+                                <div class="word-count-value">@trend.AverageWordCount.ToString("F0")</div>
+                            </div>
+                            <div class="word-count-label">@trend.Date.ToString("MMM yy")</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="@(isError ? "error-message" : "success-message")">@message</div>
+    }
+</div>
+
+@code {
+    private AnalyticsData? analytics;
+    private DateTime? startDate;
+    private DateTime? endDate;
+    private string message = "";
+    private bool isError = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAnalytics();
+    }
+
+    private async Task LoadAnalytics()
+    {
+        analytics = await AnalyticsService.GetAnalyticsAsync(startDate, endDate);
+    }
+
+    private async Task ShowAllTime()
+    {
+        startDate = null;
+        endDate = null;
+        await LoadAnalytics();
+    }
+
+    private async Task ExportPdf()
+    {
+        message = "";
+        isError = false;
+
+        try
+        {
+            var start = startDate ?? DateTime.Today.AddMonths(-1);
+            var end = endDate ?? DateTime.Today;
+
+            var filePath = await ExportService.ExportToPdfAsync(start, end);
+
+            message = $"PDF exported successfully to: {filePath}";
+
+            // Open the file
+            await JS.InvokeVoidAsync("alert", $"PDF exported to: {filePath}");
+        }
+        catch (Exception ex)
+        {
+            message = $"Error exporting PDF: {ex.Message}";
+            isError = true;
+        }
+    }
+}

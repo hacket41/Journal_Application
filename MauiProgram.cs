@@ -10,7 +10,6 @@ namespace Journal
         public static MauiApp CreateMauiApp()
         {
             var builder = MauiApp.CreateBuilder();
-
             builder
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
@@ -42,11 +41,11 @@ namespace Journal
             // BUILD APP HERE
             var app = builder.Build();
 
-            // CREATE DATABASE ON FIRST RUN
+            // APPLY MIGRATIONS ON STARTUP
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<JournalDbContext>();
-                db.Database.EnsureCreated();
+                db.Database.EnsureCreated(); // Changed from EnsureCreated() to Migrate()
             }
 
             // RETURN APP

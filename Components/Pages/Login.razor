@@ -1,0 +1,112 @@
+﻿@page "/login"
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+
+<div class="login-container">
+    <div class="login-card">
+        <h1>🔐 Welcome to My Journal</h1>
+
+        @if (!hasPassword)
+        {
+            <p>Set up your password to protect your journal</p>
+            <div class="form-group">
+                <label>Create Password</label>
+                <input type="password" @bind="password" class="form-input" placeholder="Enter password" />
+            </div>
+            <div class="form-group">
+                <label>Confirm Password</label>
+                <input type="password" @bind="confirmPassword" class="form-input" placeholder="Confirm password" />
+            </div>
+            <button class="btn btn-primary" @onclick="SetPassword">Set Password</button>
+        }
+        else
+        {
+            <p>Enter your password to continue</p>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" @bind="password" class="form-input" placeholder="Enter password" @onkeypress="HandleKeyPress" />
+            </div>
+            <button class="btn btn-primary" @onclick="Login">Login</button>
+        }
+
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="error-message">@errorMessage</div>
+        }
+    </div>
+</div>
+
+@code {
+    private bool hasPassword = false;
+    private string password = "";
+    private string confirmPassword = "";
+    private string errorMessage = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (AuthService.IsAuthenticated)
+        {
+            Navigation.NavigateTo("/");
+            return;
+        }
+
+        hasPassword = await AuthService.HasPasswordSetAsync();
+    }
+
+    private async Task SetPassword()
+    {
+        errorMessage = "";
+
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            errorMessage = "Password cannot be empty";
+            return;
+        }
+
+        if (password != confirmPassword)
+        {
+            errorMessage = "Passwords do not match";
+            return;
+        }
+
+        if (password.Length < 4)
+        {
+            errorMessage = "Password must be at least 4 characters";
+            return;
+        }
+
+        await AuthService.SetPasswordAsync(password);
+        Navigation.NavigateTo("/");
+    }
+
+    private async Task Login()
+    {
+        errorMessage = "";
+
+        if (string.IsNullOrWhiteSpace(password))
+        {
+            errorMessage = "Please enter your password";
+            return;
+        }
+
+        var isValid = await AuthService.VerifyPasswordAsync(password);
+
+        if (isValid)
+        {
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            errorMessage = "Invalid password";
+            password = "";
+        }
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await Login();
+        }
+    }
+}
