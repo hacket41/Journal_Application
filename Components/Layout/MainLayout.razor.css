@@ -1,0 +1,129 @@
+/* Navigation */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: var(--nav-bg, #ffffff);
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+}
+
+.nav-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary, #111827);
+    margin: 0;
+}
+
+.logo-icon {
+    color: var(--accent, #6366f1);
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text-muted, #6b7280);
+    padding: 0.625rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+    .nav-link svg {
+        stroke: currentColor;
+    }
+
+    .nav-link:hover {
+        background: var(--hover-bg, #f3f4f6);
+        color: var(--text-primary, #111827);
+    }
+
+    .nav-link.active {
+        color: var(--accent, #6366f1);
+        background: var(--accent-soft, #eef2ff);
+        font-weight: 600;
+    }
+
+.theme-btn {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 0.625rem;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted, #6b7280);
+    transition: all 0.2s ease;
+}
+
+    .theme-btn:hover {
+        background: var(--hover-bg, #f3f4f6);
+        color: var(--text-primary, #111827);
+    }
+
+    .theme-btn svg {
+        stroke: currentColor;
+    }
+
+.main-content {
+    padding: 2rem;
+    min-height: calc(100vh - 73px);
+    background: var(--bg-primary, #f9fafb);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.875rem 1rem;
+        flex-wrap: wrap;
+    }
+
+    .nav-title {
+        font-size: 1.25rem;
+    }
+
+    .nav-right {
+        width: 100%;
+        margin-top: 0.75rem;
+        justify-content: space-between;
+        gap: 0.25rem;
+    }
+
+    .nav-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+        .nav-link span {
+            display: none;
+        }
+
+    .main-content {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .nav-link {
+        padding: 0.5rem;
+    }
+}
