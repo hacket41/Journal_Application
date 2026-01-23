@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.Sqlite;
-using JournalApp.Models;
+using Journal.Models;
 
-namespace JournalApp.Services;
+namespace Journal.Services;
 
 public class DatabaseService
 {

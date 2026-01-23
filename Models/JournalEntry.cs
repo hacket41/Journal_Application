@@ -1,4 +1,4 @@
-﻿namespace JournalApp.Models;
+﻿namespace Journal.Models;
 
 public class JournalEntry
 {

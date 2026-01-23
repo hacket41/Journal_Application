@@ -1,7 +1,7 @@
-﻿using JournalApp.Models;
+﻿using Journal.Models;
 using System.Text.RegularExpressions;
 
-namespace JournalApp.Services;
+namespace Journal.Services;
 
 public class JournalService
 {

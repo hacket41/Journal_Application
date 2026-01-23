@@ -26,13 +26,13 @@
                     <input type="text" @bind="searchTerm" @bind:event="oninput" @onkeyup="ApplyFilters" class="form-input" placeholder="Search title or content..." />
                 </div>
             </div>
-            
+
             <div class="filter-row">
                 <div class="form-group">
                     <label>Start Date</label>
                     <input type="date" @bind="startDate" class="form-input" />
                 </div>
-                
+
                 <div class="form-group">
                     <label>End Date</label>
                     <input type="date" @bind="endDate" class="form-input" />
@@ -79,7 +79,7 @@
                     <div class="entry-date">@entry.Date.ToString("MMM d, yyyy")</div>
                     <div class="entry-card">
                         <h3>@(string.IsNullOrEmpty(entry.Title) ? "Untitled" : entry.Title)</h3>
-                        
+
                         <div class="entry-mood">
                             <span class="mood-badge @GetMoodClass(entry)">@entry.PrimaryMood</span>
                             @if (!string.IsNullOrEmpty(entry.SecondaryMood1))
@@ -131,7 +131,7 @@
     private List<JournalEntry> filteredEntries = new();
     private List<JournalEntry> displayedEntries = new();
     private List<string> allTags = new();
-    
+
     private bool showFilters = false;
     private string searchTerm = "";
     private DateTime? startDate;
@@ -156,7 +156,7 @@
             .Distinct()
             .OrderBy(t => t)
             .ToList();
-        
+
         filteredEntries = allEntries;
         UpdatePagination();
     }
@@ -165,7 +165,7 @@
     {
         totalPages = (int)Math.Ceiling(filteredEntries.Count / (double)pageSize);
         currentPage = Math.Max(1, Math.Min(currentPage, totalPages));
-        
+
         displayedEntries = filteredEntries
             .Skip((currentPage - 1) * pageSize)
             .Take(pageSize)
@@ -181,12 +181,12 @@
             filteredEntries = await JournalService.SearchEntriesAsync(searchTerm);
         }
 
-        var moods = string.IsNullOrWhiteSpace(selectedMoodFilter) 
-            ? null 
+        var moods = string.IsNullOrWhiteSpace(selectedMoodFilter)
+            ? null
             : new List<string> { selectedMoodFilter };
-        
-        var tags = string.IsNullOrWhiteSpace(selectedTagFilter) 
-            ? null 
+
+        var tags = string.IsNullOrWhiteSpace(selectedTagFilter)
+            ? null
             : new List<string> { selectedTagFilter };
 
         filteredEntries = await JournalService.FilterEntriesAsync(
@@ -207,7 +207,7 @@
         endDate = null;
         selectedMoodFilter = "";
         selectedTagFilter = "";
-        
+
         await ApplyFilters();
     }
 
