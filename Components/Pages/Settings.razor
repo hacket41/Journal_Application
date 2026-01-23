@@ -1,0 +1,90 @@
+﻿@page "/settings"
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<PageTitle>Settings - My Journal</PageTitle>
+
+@* Redirect if not authenticated *@
+@if (!AuthService.IsAuthenticated)
+{
+    Navigation.NavigateTo("/login");
+    return;
+}
+
+<div class="settings-container">
+    <h2>Settings</h2>
+
+    <!-- Account Section -->
+    <div class="settings-section">
+        <h3>Account</h3>
+        <button class="btn btn-danger" @onclick="Logout">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            Logout
+        </button>
+    </div>
+
+    <!-- Theme Section -->
+    <div class="settings-section">
+        <h3>Theme Customization</h3>
+        <label for="themeSelect">Select Theme:</label>
+        <select @bind="SelectedTheme">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+        </select>
+
+    </div>
+
+    <!-- Application Section -->
+    <div class="settings-section">
+        <h3>Application</h3>
+        <button class="btn btn-outline" @onclick="QuitApp">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+                <line x1="12" y1="2" x2="12" y2="12"></line>
+            </svg>
+            Quit App
+        </button>
+    </div>
+</div>
+
+@code {
+    private string theme = "light";
+
+    private string SelectedTheme
+    {
+        get => theme;
+        set
+        {
+            if (theme != value)
+            {
+                theme = value;
+                _ = ApplyTheme();
+            }
+        }
+    }
+
+    private void Logout()
+    {
+        AuthService.Logout();
+        Navigation.NavigateTo("/login");
+    }
+
+    private async Task QuitApp()
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to quit the application?");
+        if (confirmed)
+        {
+            await JS.InvokeVoidAsync("close");
+        }
+    }
+
+    private async Task ApplyTheme()
+    {
+        await JS.InvokeVoidAsync("applyTheme", theme);
+    }
+}
