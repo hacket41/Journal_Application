@@ -27,7 +27,7 @@ namespace Journal
             );
 
             // DbContext
-            builder.Services.AddDbContext<AppDbContext>(options =>
+            builder.Services.AddDbContext<JournalDbContext>(options =>
                 options.UseSqlite($"Filename={dbPath}")
             );
 
@@ -45,7 +45,7 @@ namespace Journal
             // CREATE DATABASE ON FIRST RUN
             using (var scope = app.Services.CreateScope())
             {
-                var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var db = scope.ServiceProvider.GetRequiredService<JournalDbContext>();
                 db.Database.EnsureCreated();
             }
 

@@ -100,7 +100,7 @@
                             <span class="mood-badge @(GetMoodClass(e.PrimaryMood))">
                                 @GetMoodEmoji(e.PrimaryMood) @e.PrimaryMood
                             </span>
-                            <span class="result-time">@e.CreatedDate.ToLocalTime().ToString("h:mm tt")</span>
+                            <span class="result-time">@e.CreatedAt.ToLocalTime().ToString("h:mm tt")</span>
                         </div>
                         <p class="result-excerpt">@GetExcerpt(e.Content)</p>
                         <div class="result-tags">

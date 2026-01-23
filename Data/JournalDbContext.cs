@@ -6,9 +6,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Journal.Data
 {
-    public class AppDbContext : DbContext
+    public class JournalDbContext : DbContext
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+        public JournalDbContext(DbContextOptions<JournalDbContext> options) : base(options)
         {
         }
 
@@ -21,7 +21,10 @@ namespace Journal.Data
                 entity.Property(e => e.Title).HasMaxLength(200);
                 entity.Property(e => e.PrimaryMood).HasMaxLength(50);
                 entity.Property(e => e.Category).HasMaxLength(50);
+
+                entity.HasIndex(e => e.EntryDate).IsUnique();
             });
         }
+
     }
 }

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Journal.Models
 {
@@ -11,20 +8,29 @@ namespace Journal.Models
         [Key]
         public int Id { get; set; }
 
-        public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+     
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+
+       
         public DateTime EntryDate { get; set; }
 
+        [MaxLength(200)]
         public string? Title { get; set; }
 
         [Required]
         public string Content { get; set; } = string.Empty;
 
         [Required]
+        [MaxLength(50)]
         public string PrimaryMood { get; set; } = "Neutral";
-        public string? SecondaryMoods { get; set; } 
 
-        public string? MoodCategory { get; set; }
+        public string? SecondaryMoods { get; set; }
+
+        [MaxLength(50)]
         public string? Category { get; set; }
-        public string? Tags { get; set; } 
+
+      
+        public string? Tags { get; set; }
     }
 }

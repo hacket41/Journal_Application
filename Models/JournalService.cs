@@ -6,7 +6,7 @@ namespace Journal.Services
 {
     public interface IJournalService
     {
-        Task<JournalEntry?> GetEntryByIdAsync(int id); // <-- add this
+        Task<JournalEntry?> GetEntryByIdAsync(int id);
         Task<JournalEntry?> GetEntryByDateAsync(DateTime date);
         Task<List<JournalEntry>> GetEntriesAsync(DateTime? startDate = null, DateTime? endDate = null);
         Task SaveEntryAsync(JournalEntry entry);
@@ -15,17 +15,16 @@ namespace Journal.Services
 
     public class JournalService : IJournalService
     {
-        private readonly AppDbContext _context;
+        private readonly JournalDbContext _context;
 
-        public JournalService(AppDbContext context)
+        public JournalService(JournalDbContext context)
         {
             _context = context;
         }
 
         public async Task<JournalEntry?> GetEntryByIdAsync(int id)
         {
-            return await _context.JournalEntries
-                .FirstOrDefaultAsync(e => e.Id == id);
+            return await _context.JournalEntries.FirstOrDefaultAsync(e => e.Id == id);
         }
 
         public async Task<JournalEntry?> GetEntryByDateAsync(DateTime date)
@@ -50,13 +49,26 @@ namespace Journal.Services
 
         public async Task SaveEntryAsync(JournalEntry entry)
         {
-            entry.CreatedDate = DateTime.UtcNow;
-            entry.EntryDate = DateTime.SpecifyKind(entry.EntryDate, DateTimeKind.Utc);
+            var existing = await GetEntryByDateAsync(entry.EntryDate);
 
-            if (entry.Id == 0)
+            if (existing == null)
+            {
+                entry.CreatedAt = DateTime.UtcNow;
+                entry.UpdatedAt = DateTime.UtcNow;
+                entry.EntryDate = entry.EntryDate.Date;
+
                 _context.JournalEntries.Add(entry);
+            }
             else
-                _context.JournalEntries.Update(entry);
+            {
+                existing.Title = entry.Title;
+                existing.Content = entry.Content;
+                existing.PrimaryMood = entry.PrimaryMood;
+                existing.SecondaryMoods = entry.SecondaryMoods;
+                existing.Tags = entry.Tags;
+                existing.Category = entry.Category;
+                existing.UpdatedAt = DateTime.UtcNow;
+            }
 
             await _context.SaveChangesAsync();
         }

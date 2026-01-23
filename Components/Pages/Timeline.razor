@@ -30,7 +30,7 @@ else if (EntryId.HasValue)
                 Mood: <span class="@GetMoodClass(entry.PrimaryMood)">
                     @GetMoodEmoji(entry.PrimaryMood) @entry.PrimaryMood
                 </span>
-                | Created at: @entry.CreatedDate.ToLocalTime().ToString("h:mm tt")
+                | Created at: @entry.CreatedAt.ToLocalTime().ToString("h:mm tt")
             </p>
 
             <div class="entry-content">
@@ -134,7 +134,7 @@ else
                                     <span class="mood-badge @(GetMoodClass(e.PrimaryMood))">
                                         @GetMoodEmoji(e.PrimaryMood) @e.PrimaryMood
                                     </span>
-                                    <span class="time">@e.CreatedDate.ToLocalTime().ToString("h:mm tt")</span>
+                                    <span class="time">@e.CreatedAt.ToLocalTime().ToString("h:mm tt")</span>
                                 </div>
                             </div>
                             @* Render markdown excerpt instead of plain text *@
@@ -365,7 +365,7 @@ else
         {
             if (entry.Id == 0)
             {
-                entry.CreatedDate = DateTime.UtcNow;
+                entry.CreatedAt = DateTime.UtcNow;
             }
 
             await JournalService.SaveEntryAsync(entry);
