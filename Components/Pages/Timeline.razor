@@ -1,402 +1,247 @@
 ﻿@page "/timeline"
-@page "/timeline/{EntryId:int?}"
-
-@inject IJournalService JournalService
+@inject JournalService JournalService
+@inject AuthService AuthService
 @inject NavigationManager Navigation
-@inject IJSRuntime JS
 
-@using Journal.Models
-@using Journal.Services
+<PageTitle>Timeline - My Journal</PageTitle>
 
-<PageTitle>Journal Timeline</PageTitle>
-
-@if (isLoading)
+@if (!AuthService.IsAuthenticated)
 {
-    <p>Loading...</p>
+    Navigation.NavigateTo("/login");
+    return;
 }
-else if (EntryId.HasValue)
-{
-    @*  Single Entry View/Edit  *@
-    @if (entry == null)
-    {
-        <p>Entry not found.</p>
-    }
-    else
-    {
-        <div class="today-page">
-            <h2>@(string.IsNullOrWhiteSpace(entry.Title) ? "(No Title)" : entry.Title)</h2>
-            <p class="entry-date">@entry.EntryDate.ToLocalTime().ToString("dddd, MMM dd yyyy")</p>
-            <p class="entry-meta">
-                Mood: <span class="@GetMoodClass(entry.PrimaryMood)">
-                    @GetMoodEmoji(entry.PrimaryMood) @entry.PrimaryMood
-                </span>
-                | Created at: @entry.CreatedDate.ToLocalTime().ToString("h:mm tt")
-            </p>
 
-            <div class="entry-content">
-                @if (isEditing)
-                {
-                    <div class="form-group">
-                        <label>Title</label>
-                        <input type="text" class="form-control" @bind="entry.Title" />
-                    </div>
-                    <div class="form-group">
-                        <label>Content</label>
-                        <textarea class="form-control" rows="8" @bind="entry.Content"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>Tags (comma separated)</label>
-                        <input type="text" class="form-control" @bind="entry.Tags" />
-                    </div>
-                    <div class="form-group">
-                        <label>Mood</label>
-                        <select class="form-control" @bind="entry.PrimaryMood">
-                            @foreach (var moodOption in moods)
-                            {
-                                <option>@moodOption</option>
-                            }
-                        </select>
-                    </div>
-                    <button class="btn btn-success" @onclick="SaveEntry">💾 Save</button>
-                    <button class="btn btn-secondary" @onclick="CancelEdit">❌ Cancel</button>
-                }
-                else
-                {
-                    @* Render markdown instead of plain text *@
-                    <div class="markdown-content">
-                        @((MarkupString)RenderMarkdown(entry.Content ?? ""))
-                    </div>
+<div class="timeline-container">
+    <div class="timeline-header">
+        <h2>Journal Timeline</h2>
+        <button class="btn btn-secondary" @onclick="ToggleFilters">🔍 Filters</button>
+    </div>
 
-                    @if (!string.IsNullOrWhiteSpace(entry.Tags))
-                    {
-                        <p>
-                            Tags:
-                            @foreach (var tag in entry.Tags.Split(','))
-                            {
-                                <span class="tag">@tag.Trim()</span>
-                            }
-                        </p>
-                    }
-                    <button class="btn btn-primary" @onclick="EnableEdit">✏️ Edit</button>
-                    <button class="btn btn-secondary" @onclick="GoBack">⬅️ Back</button>
-                }
+    @if (showFilters)
+    {
+        <div class="filters-panel">
+            <div class="filter-row">
+                <div class="form-group">
+                    <label>Search</label>
+                    <input type="text" @bind="searchTerm" @bind:event="oninput" @onkeyup="ApplyFilters" class="form-input" placeholder="Search title or content..." />
+                </div>
+            </div>
+
+            <div class="filter-row">
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" @bind="startDate" class="form-input" />
+                </div>
+
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="date" @bind="endDate" class="form-input" />
+                </div>
+            </div>
+
+            <div class="filter-row">
+                <div class="form-group">
+                    <label>Moods</label>
+                    <select @bind="selectedMoodFilter" class="form-select">
+                        <option value="">All Moods</option>
+                        @foreach (var mood in MoodDefinitions.GetAllMoods())
+                        {
+                            <option value="@mood">@mood</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Tags</label>
+                    <select @bind="selectedTagFilter" class="form-select">
+                        <option value="">All Tags</option>
+                        @foreach (var tag in allTags)
+                        {
+                            <option value="@tag">@tag</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="filter-actions">
+                <button class="btn btn-primary" @onclick="ApplyFilters">Apply Filters</button>
+                <button class="btn btn-secondary" @onclick="ClearFilters">Clear</button>
             </div>
         </div>
     }
-}
-else
-{
-    @* --- Timeline view --- *@
-    <div class="timeline-page">
-        <div class="timeline-header">
-            <h1>📜 Journal Timeline</h1>
-            <p>Browse all your journal entries chronologically</p>
-        </div>
 
-        <div class="timeline-filters">
-            <div class="filter-group">
-                <label>Sort by:</label>
-                <select class="filter-select" @bind="sortOrder">
-                    <option value="desc">Newest First</option>
-                    <option value="asc">Oldest First</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>View:</label>
-                <select class="filter-select" @bind="filterRange">
-                    <option value="all">All Entries</option>
-                    <option value="week">This Week</option>
-                    <option value="month">This Month</option>
-                    <option value="year">This Year</option>
-                </select>
-            </div>
-            <button class="btn-filter" @onclick="ApplyFilters">🔍 Apply Filters</button>
-        </div>
+    <div class="entries-list">
+        @if (displayedEntries.Any())
+        {
+            @foreach (var entry in displayedEntries)
+            {
+                <div class="timeline-entry">
+                    <div class="entry-date">@entry.Date.ToString("MMM d, yyyy")</div>
+                    <div class="entry-card">
+                        <h3>@(string.IsNullOrEmpty(entry.Title) ? "Untitled" : entry.Title)</h3>
 
-        <div class="timeline-container">
-            @if (!entries.Any())
-            {
-                <p>No journal entries found.</p>
-            }
-            else
-            {
-                @foreach (var e in entries)
-                {
-                    <div class="timeline-entry">
-                        <div class="entry-date-badge">
-                            <div class="badge-day">@e.EntryDate.Day</div>
-                            <div class="badge-month">@e.EntryDate.ToString("MMM").ToUpper()</div>
+                        <div class="entry-mood">
+                            <span class="mood-badge @GetMoodClass(entry)">@entry.PrimaryMood</span>
+                            @if (!string.IsNullOrEmpty(entry.SecondaryMood1))
+                            {
+                                <span class="mood-badge secondary">@entry.SecondaryMood1</span>
+                            }
+                            @if (!string.IsNullOrEmpty(entry.SecondaryMood2))
+                            {
+                                <span class="mood-badge secondary">@entry.SecondaryMood2</span>
+                            }
                         </div>
-                        <div class="entry-content">
-                            <div class="entry-header">
-                                <h3>@(string.IsNullOrWhiteSpace(e.Title) ? "(No Title)" : e.Title)</h3>
-                                <div class="entry-meta">
-                                    <span class="mood-badge @(GetMoodClass(e.PrimaryMood))">
-                                        @GetMoodEmoji(e.PrimaryMood) @e.PrimaryMood
-                                    </span>
-                                    <span class="time">@e.CreatedDate.ToLocalTime().ToString("h:mm tt")</span>
-                                </div>
-                            </div>
-                            @* Render markdown excerpt instead of plain text *@
-                            <div class="entry-excerpt markdown-content">
-                                @((MarkupString)RenderMarkdown(GetExcerpt(e.Content, 200)))
-                            </div>
+
+                        @if (entry.GetTags().Any())
+                        {
                             <div class="entry-tags">
-                                @if (!string.IsNullOrWhiteSpace(e.Tags))
+                                @foreach (var tag in entry.GetTags())
                                 {
-                                    foreach (var tag in e.Tags.Split(','))
-                                    {
-                                        <span class="tag">@tag.Trim()</span>
-                                    }
+                                    <span class="tag">@tag</span>
                                 }
                             </div>
-                            <div class="entry-actions">
-                                <button class="action-btn" @onclick="() => ViewEntry(e.Id)">👁️ View</button>
-                                <button class="action-btn" @onclick="() => EditEntry(e.Id)">✏️ Edit</button>
-                                <button class="action-btn" @onclick="() => DeleteEntry(e.Id)">🗑️ Delete</button>
-                            </div>
+                        }
+
+                        <div class="entry-preview">@((MarkupString)GetPreview(entry.Content))</div>
+
+                        <div class="entry-meta">
+                            @entry.WordCount words • @entry.CreatedAt.ToString("g")
                         </div>
                     </div>
-                }
+                </div>
             }
-        </div>
-    </div>
-}
 
-
-
-@code {
-    [Parameter] public int? EntryId { get; set; }
-
-    private JournalEntry? entry;
-    private List<JournalEntry> entries = new();
-    private bool isLoading = true;
-    private bool isEditing = false;
-
-    private string sortOrder = "desc";
-    private string filterRange = "all";
-
-    private readonly string[] moods = new[]
-    {
-        "Happy","Excited","Relaxed","Grateful","Confident","Calm","Thoughtful",
-        "Curious","Nostalgic","Bored","Sad","Angry","Stressed","Lonely","Anxious"
-    };
-
-    protected override async Task OnParametersSetAsync()
-    {
-        isLoading = true;
-
-        if (EntryId.HasValue)
-        {
-            await LoadEntry(EntryId.Value);
-            isEditing = false;
+            <div class="pagination">
+                <button class="btn btn-secondary" @onclick="PreviousPage" disabled="@(currentPage == 1)">◀ Previous</button>
+                <span>Page @currentPage of @totalPages</span>
+                <button class="btn btn-secondary" @onclick="NextPage" disabled="@(currentPage >= totalPages)">Next ▶</button>
+            </div>
         }
         else
         {
-            await LoadEntries();
+            <div class="empty-state">
+                <p>No entries found. Start writing your first journal entry!</p>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<JournalEntry> allEntries = new();
+    private List<JournalEntry> filteredEntries = new();
+    private List<JournalEntry> displayedEntries = new();
+    private List<string> allTags = new();
+
+    private bool showFilters = false;
+    private string searchTerm = "";
+    private DateTime? startDate;
+    private DateTime? endDate;
+    private string selectedMoodFilter = "";
+    private string selectedTagFilter = "";
+
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private int totalPages = 1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    private async Task LoadData()
+    {
+        allEntries = await JournalService.GetAllEntriesAsync();
+        allTags = allEntries
+            .SelectMany(e => e.GetTags())
+            .Distinct()
+            .OrderBy(t => t)
+            .ToList();
+
+        filteredEntries = allEntries;
+        UpdatePagination();
+    }
+
+    private void UpdatePagination()
+    {
+        totalPages = (int)Math.Ceiling(filteredEntries.Count / (double)pageSize);
+        currentPage = Math.Max(1, Math.Min(currentPage, totalPages));
+
+        displayedEntries = filteredEntries
+            .Skip((currentPage - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+    }
+
+    private async Task ApplyFilters()
+    {
+        filteredEntries = allEntries;
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            filteredEntries = await JournalService.SearchEntriesAsync(searchTerm);
         }
 
-        isLoading = false;
+        var moods = string.IsNullOrWhiteSpace(selectedMoodFilter)
+            ? null
+            : new List<string> { selectedMoodFilter };
+
+        var tags = string.IsNullOrWhiteSpace(selectedTagFilter)
+            ? null
+            : new List<string> { selectedTagFilter };
+
+        filteredEntries = await JournalService.FilterEntriesAsync(
+            startDate,
+            endDate,
+            moods,
+            tags
+        );
+
+        currentPage = 1;
+        UpdatePagination();
     }
 
-    private async Task LoadEntries()
+    private async Task ClearFilters()
     {
-        entries = await JournalService.GetEntriesAsync();
-        ApplyFilters();
+        searchTerm = "";
+        startDate = null;
+        endDate = null;
+        selectedMoodFilter = "";
+        selectedTagFilter = "";
+
+        await ApplyFilters();
     }
 
-    private async Task LoadEntry(int id)
+    private void ToggleFilters()
     {
-        entry = await JournalService.GetEntryByIdAsync(id);
+        showFilters = !showFilters;
     }
 
-    private void ApplyFilters()
+    private void NextPage()
     {
-        IEnumerable<JournalEntry> filtered = entries;
-        var now = DateTime.Today;
-
-        filtered = filterRange switch
+        if (currentPage < totalPages)
         {
-            "week" => filtered.Where(e => e.EntryDate >= now.AddDays(-7)),
-            "month" => filtered.Where(e => e.EntryDate >= now.AddMonths(-1)),
-            "year" => filtered.Where(e => e.EntryDate >= now.AddYears(-1)),
-            _ => filtered
-        };
-
-        filtered = sortOrder == "asc"
-            ? filtered.OrderBy(e => e.EntryDate)
-            : filtered.OrderByDescending(e => e.EntryDate);
-
-        entries = filtered.ToList();
-    }
-
-    private string GetExcerpt(string content, int length = 150)
-    {
-        if (string.IsNullOrWhiteSpace(content)) return "";
-        return content.Length <= length ? content : content.Substring(0, length) + "...";
-    }
-
-    private string RenderMarkdown(string markdown)
-    {
-        if (string.IsNullOrWhiteSpace(markdown))
-            return "<p><em>No content</em></p>";
-
-        var html = System.Web.HttpUtility.HtmlEncode(markdown);
-
-        // Headers
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"^### (.+)$", "<h3>$1</h3>",
-            System.Text.RegularExpressions.RegexOptions.Multiline);
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"^## (.+)$", "<h2>$1</h2>",
-            System.Text.RegularExpressions.RegexOptions.Multiline);
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"^# (.+)$", "<h1>$1</h1>",
-            System.Text.RegularExpressions.RegexOptions.Multiline);
-
-        // Bold
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"\*\*(.+?)\*\*", "<strong>$1</strong>");
-
-        // Italic
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"\*(.+?)\*", "<em>$1</em>");
-
-        // Strikethrough
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"~~(.+?)~~", "<del>$1</del>");
-
-        // Code
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"`(.+?)`", "<code>$1</code>");
-
-        // Links
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"\[([^\]]+)\]\(([^\)]+)\)", "<a href='$2' target='_blank'>$1</a>");
-
-        // Horizontal rules
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"^---+$", "<hr>",
-            System.Text.RegularExpressions.RegexOptions.Multiline);
-
-        // Blockquotes
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"^&gt; (.+)$", "<blockquote>$1</blockquote>",
-            System.Text.RegularExpressions.RegexOptions.Multiline);
-
-        // Checkboxes
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"^- \[ \] (.+)$", "<li style='list-style: none;'>☐ $1</li>",
-            System.Text.RegularExpressions.RegexOptions.Multiline);
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"^- \[x\] (.+)$", "<li style='list-style: none;'>☑ $1</li>",
-            System.Text.RegularExpressions.RegexOptions.Multiline);
-
-        // Bullet lists
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"^- (.+)$", "<li>$1</li>",
-            System.Text.RegularExpressions.RegexOptions.Multiline);
-
-        // Numbered lists
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"^\d+\. (.+)$", "<li>$1</li>",
-            System.Text.RegularExpressions.RegexOptions.Multiline);
-
-        // Wrap lists
-        html = System.Text.RegularExpressions.Regex.Replace(html,
-            @"(<li(?:\s[^>]*)?>.*?</li>(?:\r?\n)?)+", "<ul>$0</ul>");
-
-        // Line breaks
-        var lines = html.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-        var processed = new System.Text.StringBuilder();
-
-        foreach (var line in lines)
-        {
-            if (string.IsNullOrWhiteSpace(line))
-            {
-                processed.AppendLine("<br>");
-            }
-            else if (!line.TrimStart().StartsWith("<"))
-            {
-                processed.AppendLine($"<p>{line}</p>");
-            }
-            else
-            {
-                processed.AppendLine(line);
-            }
-        }
-
-        return processed.ToString();
-    }
-
-    private string GetMoodEmoji(string mood) => mood switch
-    {
-        "Happy" => "😊",
-        "Excited" => "😃",
-        "Relaxed" => "😌",
-        "Grateful" => "🙏",
-        "Confident" => "😎",
-        "Calm" => "😇",
-        "Thoughtful" => "🤔",
-        "Curious" => "🤨",
-        "Nostalgic" => "😌",
-        "Bored" => "😐",
-        "Sad" => "😔",
-        "Angry" => "😡",
-        "Stressed" => "😫",
-        "Lonely" => "😢",
-        "Anxious" => "😰",
-        _ => ""
-    };
-
-    private string GetMoodClass(string mood) => mood switch
-    {
-        "Happy" or "Excited" or "Relaxed" or "Grateful" or "Confident" => "positive",
-        "Sad" or "Angry" or "Stressed" or "Lonely" or "Anxious" => "negative",
-        _ => "neutral"
-    };
-
-    private void EnableEdit() => isEditing = true;
-    private void CancelEdit() => isEditing = false;
-
-    private async Task SaveEntry()
-    {
-        if (entry != null)
-        {
-            if (entry.Id == 0)
-            {
-                entry.CreatedDate = DateTime.UtcNow;
-            }
-
-            await JournalService.SaveEntryAsync(entry);
-            isEditing = false;
+            currentPage++;
+            UpdatePagination();
         }
     }
 
-    private void GoBack() => Navigation.NavigateTo("/timeline");
-
-    private void ViewEntry(int id) => Navigation.NavigateTo($"/timeline/{id}");
-
-    private void EditEntry(int id)
+    private void PreviousPage()
     {
-        Navigation.NavigateTo($"/timeline/{id}");
+        if (currentPage > 1)
+        {
+            currentPage--;
+            UpdatePagination();
+        }
     }
 
-    private async Task DeleteEntry(int id)
+    private string GetMoodClass(JournalEntry entry)
     {
-        bool confirmed = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this entry?");
-        if (confirmed)
-        {
-            await JournalService.DeleteEntryAsync(id);
+        return entry.GetMoodCategory().ToString().ToLower();
+    }
 
-            if (EntryId.HasValue && EntryId.Value == id)
-            {
-                Navigation.NavigateTo("/timeline");
-            }
-            else
-            {
-                await LoadEntries();
-            }
-        }
+    private string GetPreview(string content)
+    {
+        var preview = System.Text.RegularExpressions.Regex.Replace(content, "<.*?>", string.Empty);
+        return preview.Length > 200 ? preview.Substring(0, 200) + "..." : preview;
     }
 }

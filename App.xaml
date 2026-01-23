@@ -5,7 +5,9 @@
              x:Class="Journal.App">
     <Application.Resources>
         <ResourceDictionary>
-
+            <ResourceDictionary.MergedDictionaries>
+             
+            </ResourceDictionary.MergedDictionaries>
             <!--
                 For information about styling .NET MAUI pages
                 please refer to the documentation:

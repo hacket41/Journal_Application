@@ -1,460 +1,185 @@
 ﻿@page "/calendar"
+@inject JournalService JournalService
+@inject AuthService AuthService
+@inject NavigationManager Navigation
 
-<PageTitle>Calendar View</PageTitle>
+<PageTitle>Calendar - My Journal</PageTitle>
 
-<div class="calendar-page">
+@if (!AuthService.IsAuthenticated)
+{
+    Navigation.NavigateTo("/login");
+    return;
+}
+
+<div class="calendar-container">
     <div class="calendar-header">
-        <h1>Calendar View</h1>
-        <p>Navigate through your journal entries by date</p>
+        <button class="btn btn-secondary" @onclick="PreviousMonth">◀</button>
+        <h2>@currentMonth.ToString("MMMM yyyy")</h2>
+        <button class="btn btn-secondary" @onclick="NextMonth">▶</button>
     </div>
 
-    <div class="calendar-container">
-        <div class="calendar-nav">
-            <button class="nav-btn">‹ Previous</button>
-            <h2>December 2025</h2>
-            <button class="nav-btn">Next ›</button>
-        </div>
+    <div class="calendar-grid">
+        <div class="calendar-day-header">Sun</div>
+        <div class="calendar-day-header">Mon</div>
+        <div class="calendar-day-header">Tue</div>
+        <div class="calendar-day-header">Wed</div>
+        <div class="calendar-day-header">Thu</div>
+        <div class="calendar-day-header">Fri</div>
+        <div class="calendar-day-header">Sat</div>
 
-        <div class="calendar-grid">
-            <div class="calendar-weekday">Sun</div>
-            <div class="calendar-weekday">Mon</div>
-            <div class="calendar-weekday">Tue</div>
-            <div class="calendar-weekday">Wed</div>
-            <div class="calendar-weekday">Thu</div>
-            <div class="calendar-weekday">Fri</div>
-            <div class="calendar-weekday">Sat</div>
-
-            <!-- Previous month days -->
-            <div class="calendar-day other-month">24</div>
-            <div class="calendar-day other-month">25</div>
-            <div class="calendar-day other-month">26</div>
-            <div class="calendar-day other-month">27</div>
-            <div class="calendar-day other-month">28</div>
-            <div class="calendar-day other-month">29</div>
-            <div class="calendar-day other-month">30</div>
-
-            <!-- Current month days -->
-            <div class="calendar-day has-entry mood-positive">
-                <span class="day-number">1</span>
-                <div class="mood-indicator mood-positive"></div>
+        @foreach (var day in GetCalendarDays())
+        {
+            <div class="calendar-day @GetDayClass(day)" @onclick="() => SelectDay(day)">
+                <div class="day-number">@day.Day</div>
+                @if (HasEntry(day))
+                {
+                    <div class="day-indicator">📔</div>
+                    <div class="day-mood">@GetMoodEmoji(day)</div>
+                }
             </div>
-            <div class="calendar-day has-entry mood-positive">
-                <span class="day-number">2</span>
-                <div class="mood-indicator mood-positive"></div>
-            </div>
-            <div class="calendar-day has-entry mood-neutral">
-                <span class="day-number">3</span>
-                <div class="mood-indicator mood-neutral"></div>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">4</span>
-            </div>
-            <div class="calendar-day has-entry mood-positive">
-                <span class="day-number">5</span>
-                <div class="mood-indicator mood-positive"></div>
-            </div>
-            <div class="calendar-day has-entry mood-negative">
-                <span class="day-number">6</span>
-                <div class="mood-indicator mood-negative"></div>
-            </div>
-            <div class="calendar-day has-entry mood-neutral">
-                <span class="day-number">7</span>
-                <div class="mood-indicator mood-neutral"></div>
-            </div>
-            <div class="calendar-day has-entry mood-positive">
-                <span class="day-number">8</span>
-                <div class="mood-indicator mood-positive"></div>
-            </div>
-            <div class="calendar-day has-entry mood-positive">
-                <span class="day-number">9</span>
-                <div class="mood-indicator mood-positive"></div>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">10</span>
-            </div>
-            <div class="calendar-day has-entry mood-positive">
-                <span class="day-number">11</span>
-                <div class="mood-indicator mood-positive"></div>
-            </div>
-            <div class="calendar-day has-entry mood-neutral">
-                <span class="day-number">12</span>
-                <div class="mood-indicator mood-neutral"></div>
-            </div>
-            <div class="calendar-day has-entry mood-negative">
-                <span class="day-number">13</span>
-                <div class="mood-indicator mood-negative"></div>
-            </div>
-            <div class="calendar-day has-entry mood-positive">
-                <span class="day-number">14</span>
-                <div class="mood-indicator mood-positive"></div>
-            </div>
-            <div class="calendar-day has-entry mood-positive">
-                <span class="day-number">15</span>
-                <div class="mood-indicator mood-positive"></div>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">16</span>
-            </div>
-            <div class="calendar-day has-entry mood-neutral">
-                <span class="day-number">17</span>
-                <div class="mood-indicator mood-neutral"></div>
-            </div>
-            <div class="calendar-day has-entry mood-positive">
-                <span class="day-number">18</span>
-                <div class="mood-indicator mood-positive"></div>
-            </div>
-            <div class="calendar-day current-day has-entry mood-positive">
-                <span class="day-number">19</span>
-                <div class="mood-indicator mood-positive"></div>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">20</span>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">21</span>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">22</span>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">23</span>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">24</span>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">25</span>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">26</span>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">27</span>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">28</span>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">29</span>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">30</span>
-            </div>
-            <div class="calendar-day">
-                <span class="day-number">31</span>
-            </div>
-
-            <!-- Next month days -->
-            <div class="calendar-day other-month">1</div>
-            <div class="calendar-day other-month">2</div>
-            <div class="calendar-day other-month">3</div>
-            <div class="calendar-day other-month">4</div>
-        </div>
-
-        <div class="calendar-legend">
-            <div class="legend-item">
-                <div class="legend-color mood-positive"></div>
-                <span>Positive Mood</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color mood-neutral"></div>
-                <span>Neutral Mood</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color mood-negative"></div>
-                <span>Negative Mood</span>
-            </div>
-            <div class="legend-item">
-                <div class="legend-color no-entry"></div>
-                <span>No Entry</span>
-            </div>
-        </div>
+        }
     </div>
 
-    <div class="entry-preview">
-        <h3>December 19, 2025</h3>
-        <div class="preview-card">
+    @if (selectedEntry != null)
+    {
+        <div class="entry-preview">
             <div class="preview-header">
-                <span class="preview-mood">Relaxed</span>
-                <span class="preview-time">Updated at 3:45 PM</span>
+                <h3>@selectedEntry.Date.ToString("MMMM d, yyyy")</h3>
+                <button class="btn btn-secondary" @onclick="ClosePreview">✕</button>
             </div>
-            <h4>A Peaceful Thursday</h4>
-            <p class="preview-content">
-                Today was incredibly peaceful. I took some time to meditate in the morning,
-                which really set the tone for the rest of the day...
-            </p>
-            <div class="preview-tags">
-                <span class="tag">Meditation</span>
-                <span class="tag">Self-care</span>
-                <span class="tag">Reflection</span>
+            <h4>@selectedEntry.Title</h4>
+            <div class="preview-mood">
+                <strong>Mood:</strong> @selectedEntry.PrimaryMood
+                @if (!string.IsNullOrEmpty(selectedEntry.SecondaryMood1))
+                {
+                    <span>, @selectedEntry.SecondaryMood1</span>
+                }
+                @if (!string.IsNullOrEmpty(selectedEntry.SecondaryMood2))
+                {
+                    <span>, @selectedEntry.SecondaryMood2</span>
+                }
             </div>
-            <button class="btn-view">View Full Entry →</button>
+            @if (selectedEntry.GetTags().Any())
+            {
+                <div class="preview-tags">
+                    @foreach (var tag in selectedEntry.GetTags())
+                    {
+                        <span class="tag">@tag</span>
+                    }
+                </div>
+            }
+            <div class="preview-content">@((MarkupString)selectedEntry.Content)</div>
+            <div class="preview-meta">
+                @selectedEntry.WordCount words • Created @selectedEntry.CreatedAt.ToString("g")
+            </div>
         </div>
-    </div>
+    }
 </div>
 
-<style>
-    .calendar-page {
-        padding: 2rem;
-        max-width: 1200px;
-        margin: 0 auto;
+@code {
+    private DateTime currentMonth = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+    private List<JournalEntry> entries = new();
+    private JournalEntry? selectedEntry;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadEntries();
     }
 
-    .calendar-header {
-        margin-bottom: 2rem;
+    private async Task LoadEntries()
+    {
+        var startDate = new DateTime(currentMonth.Year, currentMonth.Month, 1);
+        var endDate = startDate.AddMonths(1).AddDays(-1);
+        entries = await JournalService.GetEntriesInRangeAsync(startDate, endDate);
     }
 
-        .calendar-header h1 {
-            margin: 0 0 0.5rem 0;
-            color: #333;
+    private List<DateTime> GetCalendarDays()
+    {
+        var days = new List<DateTime>();
+        var firstDay = new DateTime(currentMonth.Year, currentMonth.Month, 1);
+        var lastDay = firstDay.AddMonths(1).AddDays(-1);
+
+        // Add days from previous month
+        var firstDayOfWeek = (int)firstDay.DayOfWeek;
+        for (int i = firstDayOfWeek - 1; i >= 0; i--)
+        {
+            days.Add(firstDay.AddDays(-i - 1));
         }
 
-        .calendar-header p {
-            color: #666;
-            font-size: 1.1rem;
+        // Add days from current month
+        for (var day = firstDay; day <= lastDay; day = day.AddDays(1))
+        {
+            days.Add(day);
         }
 
-    .calendar-container {
-        background: white;
-        border-radius: 12px;
-        padding: 2rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        margin-bottom: 2rem;
-    }
-
-    .calendar-nav {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 2rem;
-    }
-
-        .calendar-nav h2 {
-            margin: 0;
-            color: #333;
-            font-size: 1.5rem;
+        // Add days from next month
+        var lastDayOfWeek = (int)lastDay.DayOfWeek;
+        for (int i = 1; i <= 6 - lastDayOfWeek; i++)
+        {
+            days.Add(lastDay.AddDays(i));
         }
 
-    .nav-btn {
-        padding: 0.5rem 1rem;
-        background: #f3f4f6;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-size: 1rem;
-        font-weight: 600;
-        transition: all 0.2s;
+        return days;
     }
 
-        .nav-btn:hover {
-            background: #e5e7eb;
-        }
+    private string GetDayClass(DateTime day)
+    {
+        var classes = new List<string>();
 
-    .calendar-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 0.5rem;
+        if (day.Month != currentMonth.Month)
+            classes.Add("other-month");
+
+        if (day.Date == DateTime.Today)
+            classes.Add("today");
+
+        if (HasEntry(day))
+            classes.Add("has-entry");
+
+        return string.Join(" ", classes);
     }
 
-    .calendar-weekday {
-        padding: 1rem;
-        text-align: center;
-        font-weight: 700;
-        color: #666;
-        font-size: 0.9rem;
+    private bool HasEntry(DateTime day)
+    {
+        return entries.Any(e => e.Date.Date == day.Date);
     }
 
-    .calendar-day {
-        aspect-ratio: 1;
-        padding: 0.5rem;
-        background: #f9fafb;
-        border-radius: 8px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s;
-        position: relative;
-        border: 2px solid transparent;
+    private string GetMoodEmoji(DateTime day)
+    {
+        var entry = entries.FirstOrDefault(e => e.Date.Date == day.Date);
+        if (entry == null) return "";
+
+        return entry.GetMoodCategory() switch
+        {
+            MoodCategory.Positive => "😊",
+            MoodCategory.Neutral => "😐",
+            MoodCategory.Negative => "😔",
+            _ => ""
+        };
     }
 
-        .calendar-day:hover {
-            transform: scale(1.05);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
+    private async Task SelectDay(DateTime day)
+    {
+        if (day.Month != currentMonth.Month) return;
 
-        .calendar-day.other-month {
-            opacity: 0.3;
-            cursor: default;
-        }
-
-            .calendar-day.other-month:hover {
-                transform: none;
-                box-shadow: none;
-            }
-
-        .calendar-day.has-entry {
-            font-weight: 600;
-        }
-
-    /* Mood indicator circles instead of emojis */
-    .mood-indicator {
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        margin-top: 0.25rem;
+        selectedEntry = await JournalService.GetEntryByDateAsync(day);
     }
 
-        .mood-indicator.mood-positive {
-            background: #10b981;
-        }
-
-        .mood-indicator.mood-neutral {
-            background: #f59e0b;
-        }
-
-        .mood-indicator.mood-negative {
-            background: #ef4444;
-        }
-
-    .calendar-day.mood-positive {
-        background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    private void ClosePreview()
+    {
+        selectedEntry = null;
     }
 
-    .calendar-day.mood-neutral {
-        background: linear-gradient(135deg, #fef3c7, #fde68a);
+    private async Task PreviousMonth()
+    {
+        currentMonth = currentMonth.AddMonths(-1);
+        await LoadEntries();
+        selectedEntry = null;
     }
 
-    .calendar-day.mood-negative {
-        background: linear-gradient(135deg, #fee2e2, #fecaca);
+    private async Task NextMonth()
+    {
+        currentMonth = currentMonth.AddMonths(1);
+        await LoadEntries();
+        selectedEntry = null;
     }
-
-    .calendar-day.current-day {
-        border-color: #5e3a8e;
-        box-shadow: 0 0 0 3px rgba(94, 58, 142, 0.2);
-    }
-
-    .day-number {
-        font-size: 1rem;
-        color: #333;
-    }
-
-    .calendar-legend {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        margin-top: 2rem;
-        padding-top: 1.5rem;
-        border-top: 2px solid #f3f4f6;
-    }
-
-    .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-    }
-
-    .legend-color {
-        width: 20px;
-        height: 20px;
-        border-radius: 4px;
-    }
-
-        .legend-color.mood-positive {
-            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-        }
-
-        .legend-color.mood-neutral {
-            background: linear-gradient(135deg, #fef3c7, #fde68a);
-        }
-
-        .legend-color.mood-negative {
-            background: linear-gradient(135deg, #fee2e2, #fecaca);
-        }
-
-        .legend-color.no-entry {
-            background: #f9fafb;
-            border: 2px solid #e5e7eb;
-        }
-
-    .entry-preview {
-        background: white;
-        border-radius: 12px;
-        padding: 2rem;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-        .entry-preview h3 {
-            margin: 0 0 1rem 0;
-            color: #333;
-        }
-
-    .preview-card {
-        padding: 1.5rem;
-        background: #f9fafb;
-        border-radius: 8px;
-    }
-
-    .preview-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-
-    .preview-mood {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #10b981;
-    }
-
-    .preview-time {
-        color: #666;
-        font-size: 0.9rem;
-    }
-
-    .preview-card h4 {
-        margin: 0 0 0.75rem 0;
-        color: #333;
-        font-size: 1.3rem;
-    }
-
-    .preview-content {
-        color: #555;
-        line-height: 1.6;
-        margin-bottom: 1rem;
-    }
-
-    .preview-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-        margin-bottom: 1rem;
-    }
-
-    .tag {
-        padding: 0.4rem 0.75rem;
-        background: white;
-        color: #5e3a8e;
-        border-radius: 16px;
-        font-size: 0.85rem;
-        font-weight: 500;
-    }
-
-    .btn-view {
-        padding: 0.75rem 1.5rem;
-        background: linear-gradient(135deg, #5e3a8e, #4a2c6d);
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-weight: 600;
-        cursor: pointer;
-        transition: all 0.2s;
-    }
-
-        .btn-view:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(94, 58, 142, 0.3);
-        }
-</style>
+}

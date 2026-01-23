@@ -1,14 +1,20 @@
-(function () {
+﻿(function () {
     let quill = null;
 
     window.initQuill = function (content) {
-        if (quill) return;
-
         const editor = document.getElementById("quillEditor");
+
         if (!editor) {
-            console.error("quillEditor not found");
+            console.warn("quillEditor not found");
             return;
         }
+
+        // 🔥 If quill exists but DOM was destroyed, reset it
+        if (quill && !editor.firstChild) {
+            quill = null;
+        }
+
+        if (quill) return;
 
         quill = new Quill(editor, {
             theme: "snow",
@@ -32,5 +38,10 @@
 
     window.getQuillContent = function () {
         return quill ? quill.root.innerHTML : "";
+    };
+
+    // ✅ Called when leaving the page
+    window.destroyQuill = function () {
+        quill = null;
     };
 })();

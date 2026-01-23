@@ -1,0 +1,255 @@
+﻿@page "/"
+@inject JournalService JournalService
+@inject AuthService AuthService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+
+<PageTitle>Write - My Journal</PageTitle>
+
+@if (!AuthService.IsAuthenticated)
+{
+    Navigation.NavigateTo("/login");
+    return;
+}
+
+<div class="write-container">
+    <div class="write-header">
+        <h2>@DateTime.Today.ToString("dddd, MMMM d, yyyy")</h2>
+        @if (existingEntry != null)
+        {
+            <button class="btn btn-danger" @onclick="DeleteEntry">🗑️ Delete</button>
+        }
+    </div>
+
+    <div class="form-group">
+        <label>Title (Optional)</label>
+        <input type="text" @bind="title" class="form-input" placeholder="Give your entry a title..." />
+    </div>
+
+    <div class="form-group">
+        <label>Content *</label>
+        <div id="editor" style="height: 300px;"></div>
+    </div>
+
+    <div class="form-row">
+        <div class="form-group">
+            <label>Primary Mood *</label>
+            <select @bind="primaryMood" class="form-select">
+                <option value="">Select mood...</option>
+                @foreach (var category in MoodDefinitions.Moods)
+                {
+                    <optgroup label="@category.Key">
+                        @foreach (var mood in category.Value)
+                        {
+                            <option value="@mood">@mood</option>
+                        }
+                    </optgroup>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Secondary Mood 1</label>
+            <select @bind="secondaryMood1" class="form-select">
+                <option value="">None</option>
+                @foreach (var mood in MoodDefinitions.GetAllMoods())
+                {
+                    <option value="@mood">@mood</option>
+                }
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Secondary Mood 2</label>
+            <select @bind="secondaryMood2" class="form-select">
+                <option value="">None</option>
+                @foreach (var mood in MoodDefinitions.GetAllMoods())
+                {
+                    <option value="@mood">@mood</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Category</label>
+        <input type="text" @bind="category" class="form-input" placeholder="e.g., Personal, Work, Health..." />
+    </div>
+
+    <div class="form-group">
+        <label>Tags</label>
+        <div class="tags-container">
+            @foreach (var tag in selectedTags)
+            {
+                <span class="tag">
+                    @tag
+                    <button @onclick="() => RemoveTag(tag)">×</button>
+                </span>
+            }
+        </div>
+        <div class="tag-input-row">
+            <input type="text" @bind="newTag" @onkeypress="HandleTagKeyPress" class="form-input" placeholder="Add custom tag..." />
+            <button class="btn btn-secondary" @onclick="AddCustomTag">Add</button>
+        </div>
+        <div class="predefined-tags">
+            @foreach (var tag in PredefinedTags.Tags.Where(t => !selectedTags.Contains(t)).Take(15))
+            {
+                <button class="tag-btn" @onclick="() => AddTag(tag)">+ @tag</button>
+            }
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <button class="btn btn-primary" @onclick="SaveEntry">💾 Save Entry</button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="@(isError ? "error-message" : "success-message")">@message</div>
+    }
+</div>
+
+@code {
+    private JournalEntry? existingEntry;
+    private string title = "";
+    private string primaryMood = "";
+    private string? secondaryMood1;
+    private string? secondaryMood2;
+    private string? category;
+    private List<string> selectedTags = new();
+    private string newTag = "";
+    private string message = "";
+    private bool isError = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        existingEntry = await JournalService.GetTodayEntryAsync();
+
+        if (existingEntry != null)
+        {
+            title = existingEntry.Title;
+            primaryMood = existingEntry.PrimaryMood;
+            secondaryMood1 = existingEntry.SecondaryMood1;
+            secondaryMood2 = existingEntry.SecondaryMood2;
+            category = existingEntry.Category;
+            selectedTags = existingEntry.GetTags();
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("initQuill", existingEntry?.Content ?? "");
+        }
+    }
+
+    private void AddTag(string tag)
+    {
+        if (!selectedTags.Contains(tag))
+        {
+            selectedTags.Add(tag);
+        }
+    }
+
+    private void RemoveTag(string tag)
+    {
+        selectedTags.Remove(tag);
+    }
+
+    private void AddCustomTag()
+    {
+        if (!string.IsNullOrWhiteSpace(newTag) && !selectedTags.Contains(newTag))
+        {
+            selectedTags.Add(newTag.Trim());
+            newTag = "";
+        }
+    }
+
+    private async Task HandleTagKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            AddCustomTag();
+        }
+    }
+
+    private async Task SaveEntry()
+    {
+        message = "";
+        isError = false;
+
+        if (string.IsNullOrWhiteSpace(primaryMood))
+        {
+            message = "Please select a primary mood";
+            isError = true;
+            return;
+        }
+
+        var content = await JS.InvokeAsync<string>("getQuillContent");
+
+        if (string.IsNullOrWhiteSpace(content))
+        {
+            message = "Please write some content";
+            isError = true;
+            return;
+        }
+
+        if (existingEntry != null)
+        {
+            existingEntry.Title = title;
+            existingEntry.Content = content;
+            existingEntry.PrimaryMood = primaryMood;
+            existingEntry.SecondaryMood1 = string.IsNullOrWhiteSpace(secondaryMood1) ? null : secondaryMood1;
+            existingEntry.SecondaryMood2 = string.IsNullOrWhiteSpace(secondaryMood2) ? null : secondaryMood2;
+            existingEntry.Category = category;
+            existingEntry.SetTags(selectedTags);
+
+            await JournalService.UpdateEntryAsync(existingEntry);
+            message = "Entry updated successfully!";
+        }
+        else
+        {
+            var entry = new JournalEntry
+            {
+                Date = DateTime.Today,
+                Title = title,
+                Content = content,
+                PrimaryMood = primaryMood,
+                SecondaryMood1 = string.IsNullOrWhiteSpace(secondaryMood1) ? null : secondaryMood1,
+                SecondaryMood2 = string.IsNullOrWhiteSpace(secondaryMood2) ? null : secondaryMood2,
+                Category = category
+            };
+            entry.SetTags(selectedTags);
+
+            await JournalService.CreateEntryAsync(entry);
+            existingEntry = entry;
+            message = "Entry saved successfully!";
+        }
+    }
+
+    private async Task DeleteEntry()
+    {
+        if (existingEntry != null)
+        {
+            var confirmed = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this entry?");
+
+            if (confirmed)
+            {
+                await JournalService.DeleteEntryAsync(existingEntry.Id);
+
+                // Reset form
+                existingEntry = null;
+                title = "";
+                primaryMood = "";
+                secondaryMood1 = null;
+                secondaryMood2 = null;
+                category = null;
+                selectedTags.Clear();
+
+                await JS.InvokeVoidAsync("clearQuill");
+                message = "Entry deleted successfully";
+            }
+        }
+    }
+}
