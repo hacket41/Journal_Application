@@ -120,4 +120,10 @@ public class JournalService
         var words = plainText.Split(new[] { ' ', '\n', '\r', '\t' }, StringSplitOptions.RemoveEmptyEntries);
         return words.Length;
     }
+
+    public async Task<JournalEntry?> GetEntryByIdAsync(int id)
+    {
+        var allEntries = await _database.GetAllEntriesAsync();
+        return allEntries.FirstOrDefault(e => e.Id == id);
+    }
 }
