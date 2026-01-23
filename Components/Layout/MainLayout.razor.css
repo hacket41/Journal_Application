@@ -1,0 +1,103 @@
+::deep .navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 2rem;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+::deep .nav-title {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+::deep .logo-icon {
+    color: #6366f1;
+    stroke: #6366f1;
+}
+
+::deep .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+::deep a.nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    color: #6b7280;
+    background: transparent;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+    ::deep a.nav-link svg {
+        width: 18px;
+        height: 18px;
+        stroke: #6366f1;
+        fill: none;
+        transition: stroke 0.2s ease;
+    }
+
+    ::deep a.nav-link:hover {
+        background: #f3f4f6;
+        color: #111827;
+        border-color: #e5e7eb;
+    }
+
+        ::deep a.nav-link:hover svg {
+            stroke: #818cf8;
+        }
+
+    ::deep a.nav-link.active {
+        background: #eef2ff;
+        color: #6366f1;
+        border-color: #c7d2fe;
+        font-weight: 600;
+    }
+
+        ::deep a.nav-link.active svg {
+            stroke: #6366f1;
+        }
+
+::deep .theme-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    background: transparent;
+    color: #6b7280;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+    ::deep .theme-btn:hover {
+        background: #f3f4f6;
+        color: #111827;
+    }
+
+    ::deep .theme-btn svg {
+        width: 18px;
+        height: 18px;
+        stroke: #6366f1;
+        fill: none;
+        transition: stroke 0.2s ease;
+    }
+
+    ::deep .theme-btn:hover svg {
+        stroke: #818cf8;
+    }
