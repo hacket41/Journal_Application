@@ -182,7 +182,7 @@
             var start = startDate ?? DateTime.Today.AddMonths(-1);
             var end = endDate ?? DateTime.Today;
 
-            var filePath = await ExportService.ExportToPdfAsync(start, end);
+            var filePath = await ExportService.ExportToHtmlAsync(start, end);
 
             message = $"PDF exported successfully to: {filePath}";
 

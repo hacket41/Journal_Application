@@ -15,16 +15,18 @@ public class ExportService
 
     public async Task<string> ExportToHtmlAsync(DateTime startDate, DateTime endDate)
     {
-        var entries = await _journalService.GetEntriesInRangeAsync(startDate, endDate);
+        var htmlPath = await ExportToHtmlAsync(startDate, endDate);
 
-        var fileName = $"Journal_{startDate:yyyy-MM-dd}_to_{endDate:yyyy-MM-dd}.html";
-        var filePath = Path.Combine(FileSystem.AppDataDirectory, fileName);
+        var pdfFileName = $"Journal_{startDate:yyyy-MM-dd}_to_{endDate:yyyy-MM-dd}.pdf";
+        var pdfPath = Path.Combine(FileSystem.AppDataDirectory, pdfFileName);
 
-        var html = GenerateHtml(entries, startDate, endDate);
-        await File.WriteAllTextAsync(filePath, html);
+        // PLACEHOLDER: convert HTML → PDF
+        // You will replace this with a real PDF library
+        File.Copy(htmlPath, pdfPath, overwrite: true);
 
-        return filePath;
+        return pdfPath;
     }
+
 
     private string GenerateHtml(List<JournalEntry> entries, DateTime startDate, DateTime endDate)
     {
