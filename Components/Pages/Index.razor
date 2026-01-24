@@ -189,6 +189,15 @@
             return;
         }
 
+        // Check if entry already exists for today
+        var existingEntry = await JournalService.GetEntryByDateAsync(DateTime.Today);
+        if (existingEntry != null)
+        {
+            message = "You have already written your journal for today. Please edit the existing entry from the Entries page or choose a different date.";
+            isError = true;
+            return;
+        }
+
         var entry = new JournalEntry
         {
             Date = DateTime.Today,
