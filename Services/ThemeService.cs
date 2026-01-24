@@ -10,6 +10,14 @@ public class ThemeService
     private const string THEME_KEY = "app_theme";
     private const string CUSTOM_COLORS_KEY = "custom_colors";
 
+    private string _currentTheme = "light";
+
+    // Public property for current theme
+    public string CurrentTheme => _currentTheme;
+
+    // Event that fires when theme changes
+    public event Action? OnThemeChanged;
+
     public ThemeService(DatabaseService databaseService, IJSRuntime jsRuntime)
     {
         _databaseService = databaseService;
@@ -19,13 +27,23 @@ public class ThemeService
     public async Task<string> GetCurrentThemeAsync()
     {
         var theme = await _databaseService.GetSettingAsync(THEME_KEY);
-        return theme ?? "light";
+        _currentTheme = theme ?? "light";
+        return _currentTheme;
     }
 
     public async Task SetThemeAsync(string theme)
     {
         await _databaseService.SetSettingAsync(THEME_KEY, theme);
+        _currentTheme = theme;
+        await Task.Delay(50);
         await ApplyThemeToUI(theme);
+        OnThemeChanged?.Invoke();
+    }
+
+    public async Task ToggleThemeAsync()
+    {
+        var newTheme = _currentTheme == "light" ? "dark" : "light";
+        await SetThemeAsync(newTheme);
     }
 
     public async Task ApplyCustomThemeAsync(string primaryColor, string backgroundColor, string textColor, string cardBackground)
@@ -42,7 +60,9 @@ public class ThemeService
         await _databaseService.SetSettingAsync(CUSTOM_COLORS_KEY, json);
         await _databaseService.SetSettingAsync(THEME_KEY, "custom");
 
+        _currentTheme = "custom";
         await ApplyCustomColorsToUI(customColors);
+        OnThemeChanged?.Invoke();
     }
 
     public async Task<CustomThemeColors?> GetCustomColorsAsync()
@@ -102,8 +122,8 @@ public class ThemeService
 
 public class CustomThemeColors
 {
-    public string PrimaryColor { get; set; } = "#6366f1";
+    public string PrimaryColor { get; set; } = "#4A90E2";
     public string BackgroundColor { get; set; } = "#ffffff";
-    public string TextColor { get; set; } = "#1f2937";
+    public string TextColor { get; set; } = "#333333";
     public string CardBackground { get; set; } = "#f9fafb";
 }

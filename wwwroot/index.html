@@ -9,12 +9,11 @@
     <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
     <link href="Journal.styles.css" rel="stylesheet" />
 </head>
-
 <body>
     <div id="app">
         <div style="display: flex; justify-content: center; align-items: center; height: 100vh;">
             <div style="text-align: center;">
-                <h1>📔 Loading Journal...</h1>
+                <h1 style="color: #4A90E2;">Loading Journal...</h1>
                 <div style="margin-top: 20px;">
                     <div class="spinner"></div>
                 </div>
@@ -25,24 +24,14 @@
     <div id="blazor-error-ui">
         An unhandled error has occurred.
         <a href="" class="reload">Reload</a>
-        <a class="dismiss">🗙</a>
+        <a class="dismiss">✕</a>
     </div>
 
-    <script src="_framework/blazor.webview.js" autostart="false"></script>
+    <!-- Scripts - ORDER MATTERS! -->
     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <script src="js/app.js"></script>
-    <script src="js/these.js"></script>
-    <script>
-        function applyTheme(theme) {
-            document.body.classList.remove("light", "dark", "custom");
-            document.body.classList.add(theme);
-        }
-
-        // Optional: apply saved theme on load
-        const savedTheme = localStorage.getItem("journalTheme") || "light";
-        applyTheme(savedTheme);
-    </script>
-
+    <script src="js/theme.js"></script>
+    <script src="_framework/blazor.webview.js" autostart="false"></script>
 
     <style>
         .spinner {
