@@ -1,0 +1,97 @@
+﻿@page "/edit/{EntryId:int}"
+@inject JournalService JournalService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
+@inject AuthService AuthService
+
+<PageTitle>Edit Journal Entry</PageTitle>
+
+@if (!AuthService.IsAuthenticated)
+{
+    Navigation.NavigateTo("/login");
+    return;
+}
+
+<div class="write-container">
+    @if (entry == null)
+    {
+        <p>Loading entry...</p>
+    }
+    else
+    {
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" @bind="entry.Title" class="form-input" placeholder="Title..." />
+        </div>
+
+        <div class="form-group">
+            <label>Content *</label>
+            <div id="editor" style="height: 300px;"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Primary Mood *</label>
+            <select @bind="entry.PrimaryMood" class="form-select">
+                @foreach (var category in MoodDefinitions.Moods)
+                {
+                    <optgroup label="@category.Key">
+                        @foreach (var mood in category.Value)
+                        {
+                            <option value="@mood">@mood</option>
+                        }
+                    </optgroup>
+                }
+            </select>
+        </div>
+
+        <!-- You can also add secondary moods, category, tags etc. same as Write page -->
+
+        <div class="action-buttons">
+            <button class="btn btn-primary" @onclick="SaveEntry">Update Entry</button>
+            <button class="btn btn-danger" @onclick="DeleteEntry">Delete Entry</button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int EntryId { get; set; }
+
+    private JournalEntry? entry;
+
+    protected override async Task OnInitializedAsync()
+    {
+        entry = await JournalService.GetEntryByIdAsync(EntryId);
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && entry != null)
+        {
+            await JS.InvokeVoidAsync("initQuill", entry.Content);
+        }
+    }
+
+    private async Task SaveEntry()
+    {
+        if (entry == null) return;
+
+        var content = await JS.InvokeAsync<string>("getQuillContent");
+        entry.Content = content;
+
+        await JournalService.UpdateEntryAsync(entry);
+        Navigation.NavigateTo("/timeline");
+    }
+
+    private async Task DeleteEntry()
+    {
+        if (entry == null) return;
+
+        var confirmed = await JS.InvokeAsync<bool>("confirm", "Are you sure you want to delete this entry?");
+        if (confirmed)
+        {
+            await JournalService.DeleteEntryAsync(entry.Id);
+            Navigation.NavigateTo("/timeline");
+        }
+    }
+}

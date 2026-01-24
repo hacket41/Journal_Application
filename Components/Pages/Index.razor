@@ -85,7 +85,7 @@
                 {
                     <span class="tag">
                         @tag
-                        <button @onclick="() => RemoveTag(tag)">x</button>
+                        <button @onclick="() => RemoveTag(tag)" title="Remove tag">x</button>
                     </span>
                 }
             </div>
@@ -95,7 +95,21 @@
             <input type="text" @bind="newTag" @onkeypress="HandleTagKeyPress" class="form-input" placeholder="Add custom tag and press Enter..." />
             <button class="btn btn-secondary" @onclick="AddCustomTag">Add</button>
         </div>
+
+        @if (PredefinedTags.Tags.Where(t => !selectedTags.Contains(t)).Any())
+        {
+            <div class="predefined-tags-label">Suggested tags:</div>
+            <div class="predefined-tags">
+                @foreach (var tag in PredefinedTags.Tags.Where(t => !selectedTags.Contains(t)).Take(15))
+                {
+                    <button class="tag-btn" @onclick="() => AddTag(tag)">
+                        @tag
+                    </button>
+                }
+            </div>
+        }
     </div>
+
 
     <div class="action-buttons">
         <button class="btn btn-primary" @onclick="SaveEntry">Save Entry</button>
@@ -171,6 +185,15 @@
         if (string.IsNullOrWhiteSpace(content))
         {
             message = "Please write some content";
+            isError = true;
+            return;
+        }
+
+        // Check if entry already exists for today
+        var existingEntry = await JournalService.GetEntryByDateAsync(DateTime.Today);
+        if (existingEntry != null)
+        {
+            message = "You have already written your journal for today. Please edit the existing entry from the Entries page or choose a different date.";
             isError = true;
             return;
         }
