@@ -1,0 +1,203 @@
+.write-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+    .write-container p {
+        text-align: center;
+        color: #666;
+        font-size: 1.1rem;
+        padding: 3rem 0;
+    }
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+    .form-group label {
+        display: block;
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        letter-spacing: 0.3px;
+    }
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    color: #2c3e50;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+    .form-input:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-input::placeholder {
+        color: #aaa;
+    }
+
+.form-select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 12px;
+    appearance: none;
+    padding-right: 2.5rem;
+}
+
+    .form-select optgroup {
+        font-weight: 600;
+        color: #667eea;
+        font-style: normal;
+    }
+
+    .form-select option {
+        font-weight: 400;
+        color: #2c3e50;
+        padding: 0.5rem;
+    }
+
+#editor {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    transition: border-color 0.3s ease;
+}
+
+    #editor:focus-within {
+        border-color: #667eea;
+    }
+
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e0e0e0;
+}
+
+.btn {
+    flex: 1;
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    letter-spacing: 0.3px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .btn:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #5568d3 0%, #65408a 100%);
+    }
+
+.btn-danger {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+}
+
+    .btn-danger:hover {
+        background: linear-gradient(135deg, #e082ea 0%, #e4465b 100%);
+    }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .write-container {
+        margin: 1rem;
+        padding: 1.5rem;
+        border-radius: 8px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+
+/* Loading State */
+.write-container p {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Required field indicator */
+.form-group label::after {
+    content: attr(data-required);
+    color: #f5576c;
+    margin-left: 0.25rem;
+}
+
+/* Better focus states for accessibility */
+.btn:focus-visible,
+.form-input:focus-visible,
+.form-select:focus-visible {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Smooth transitions */
+* {
+    box-sizing: border-box;
+}
+
+/* Quill editor custom styling */
+.ql-toolbar {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border: 2px solid #e0e0e0;
+    border-bottom: none;
+    background: #f8f9fa;
+}
+
+.ql-container {
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    border: 2px solid #e0e0e0;
+    border-top: none;
+    font-size: 1rem;
+}
