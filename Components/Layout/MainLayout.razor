@@ -2,7 +2,7 @@
 @inject ThemeService ThemeService
 @inject NavigationManager Navigation
 
-<div class="app-container @ThemeService.CurrentTheme">
+<div class="app-container">
     <nav class="navbar">
         <div class="nav-left">
             <h1 class="nav-title">
@@ -82,8 +82,18 @@
         await ThemeService.ToggleThemeAsync();
     }
 
-    public void Dispose()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        ThemeService.OnThemeChanged -= StateHasChanged;
+        if (firstRender)
+        {
+            await ThemeService.InitializeThemeAsync();
+
+            if (ThemeService.CurrentMode == AppThemeMode.Auto)
+            {
+                await JS.InvokeVoidAsync("listenForSystemThemeChanges");
+            }
+        }
     }
+    }
+    public void Dispose() => ThemeService.OnThemeChanged -= StateHasChanged;
 }

@@ -2,19 +2,20 @@
 
 /* CSS Variables for Theme System */
 :root {
+    /* Colors */
     --primary-color: #4A90E2;
     --primary-hover: #357ABD;
     --secondary-color: #7B68EE;
     --background-color: #f8f9fa;
     --surface-color: #ffffff;
     --card-background: #ffffff;
-    --text-color: #333;
-    --text-secondary: #666;
+    --text-color: #333333;
+    --text-secondary: #666666;
     --border-color: #dee2e6;
     --input-background: #ffffff;
     --input-border: #dee2e6;
     --shadow: rgba(0, 0, 0, 0.1);
-    --card-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    --card-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     /* Status Colors */
     --success-color: #28a745;
     --error-color: #dc3545;
@@ -36,24 +37,53 @@
     --transition-speed: 0.3s;
 }
 
-/* Apply theme to body */
+/* Body & Global Text */
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
     line-height: 1.6;
-    background-color: var(--background-color);
-    color: var(--text-color);
     margin: 0;
     padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
     transition: background-color var(--transition-speed), color var(--transition-speed);
 }
 
-/* Elements transition */
+    /* Theme Classes */
+    body.theme-light {
+        --background-color: #f8f9fa;
+        --surface-color: #ffffff;
+        --card-background: #ffffff;
+        --text-color: #333333;
+        --text-secondary: #666666;
+        --border-color: #dee2e6;
+        --input-background: #ffffff;
+        --input-border: #dee2e6;
+        --shadow: rgba(0, 0, 0, 0.1);
+    }
+
+    body.theme-dark {
+        --background-color: #0f172a;
+        --surface-color: #020617;
+        --card-background: #1e293b;
+        --text-color: #e5e7eb;
+        --text-secondary: #94a3b8;
+        --border-color: #334155;
+        --input-background: #020617;
+        --input-border: #334155;
+        --shadow: rgba(0, 0, 0, 0.6);
+    }
+
+    body.theme-custom {
+        /* Custom theme values injected via JS */
+    }
+
+/* Universal Transition */
 * {
     box-sizing: border-box;
-    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed);
+    transition: background-color var(--transition-speed), color var(--transition-speed), border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 
-/* Form Elements */
+/* Forms */
 .form-group label {
     display: block;
     margin-bottom: var(--spacing-sm);
@@ -65,12 +95,11 @@ body {
 .form-input {
     width: 100%;
     padding: 0.75rem;
-    background: var(--input-background);
+    background-color: var(--input-background);
     color: var(--text-color);
     border: 1px solid var(--input-border);
     border-radius: var(--radius-md);
     font-size: 1rem;
-    transition: all var(--transition-speed);
 }
 
     .form-select:focus,
@@ -80,10 +109,11 @@ body {
         box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
     }
 
+/* Buttons */
 .btn {
     padding: 0.75rem 1.5rem;
     border: none;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
@@ -96,47 +126,47 @@ body {
 }
 
 .btn-primary {
-    background: var(--primary-color);
-    color: white;
+    background-color: var(--primary-color);
+    color: #fff;
 }
 
     .btn-primary:hover {
-        background: var(--primary-hover);
+        background-color: var(--primary-hover);
         transform: translateY(-2px);
         box-shadow: 0 6px 12px rgba(0,0,0,0.25);
     }
 
 .btn-secondary {
-    background: var(--surface-color);
+    background-color: var(--surface-color);
     color: var(--text-color);
     border: 1px solid var(--border-color);
 }
 
     .btn-secondary:hover {
-        background: var(--border-color);
+        background-color: var(--border-color);
         transform: translateY(-1px);
         box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 
 .btn-danger {
-    background: var(--error-color);
-    color: white;
+    background-color: var(--error-color);
+    color: #fff;
 }
 
     .btn-danger:hover {
-        background: #dc2626;
+        background-color: #dc2626;
         transform: translateY(-2px);
         box-shadow: 0 4px 10px rgba(0,0,0,0.2);
     }
 
 /* Navbar */
 .navbar {
-    background-color: var(--surface-color);
-    border-bottom: 1px solid var(--border-color);
-    padding: 1rem 2rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 1rem 2rem;
+    background-color: var(--surface-color);
+    border-bottom: 1px solid var(--border-color);
     box-shadow: var(--card-shadow);
 }
 
@@ -151,7 +181,7 @@ body {
     align-items: center;
 }
 
-/* Cards */
+/* Cards & Panels */
 .entry-card,
 .mood-card,
 .stat-card,
@@ -159,9 +189,8 @@ body {
 .filters-panel,
 .entry-preview,
 .login-card {
-    background: var(--card-background);
+    background-color: var(--card-background);
     border: 1px solid var(--border-color);
     color: var(--text-color);
     box-shadow: var(--card-shadow);
 }
-
