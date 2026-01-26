@@ -113,7 +113,19 @@ public class ExportService
         .content {
             margin: 15px 0;
             line-height: 1.6;
-            white-space: pre-wrap;
+        }
+        .content p {
+            margin: 10px 0;
+        }
+        .content strong {
+            font-weight: bold;
+        }
+        .content em {
+            font-style: italic;
+        }
+        .content ul, .content ol {
+            margin: 10px 0;
+            padding-left: 30px;
         }
         .metadata {
             font-size: 12px;
@@ -188,9 +200,8 @@ public class ExportService
                     sb.AppendLine("        </div>");
                 }
 
-                // Content
-                var encodedContent = System.Net.WebUtility.HtmlEncode(entry.Content);
-                sb.AppendLine($"        <div class='content'>{encodedContent}</div>");
+                // Content - DO NOT encode, render as HTML
+                sb.AppendLine($"        <div class='content'>{entry.Content}</div>");
 
                 // Metadata
                 sb.AppendLine($"        <div class='metadata'>Words: {entry.WordCount} | Created: {entry.CreatedAt:g}</div>");
