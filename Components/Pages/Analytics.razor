@@ -16,7 +16,7 @@
 <div class="analytics-container">
     <div class="analytics-header">
         <h2>Journal Analytics</h2>
-        <button class="btn btn-primary" @onclick="ExportPdf">
+        <button class="btn btn-primary" @onclick="ShowExportModal">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
                 <polyline points="7 10 12 15 17 10"></polyline>
@@ -182,12 +182,103 @@
     }
 </div>
 
+<!-- Export Modal -->
+@if (showExportModal)
+{
+    <div class="modal-overlay" @onclick="CloseExportModal">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>Export Journal Entries</h3>
+                <button class="modal-close" @onclick="CloseExportModal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Start Date</label>
+                    <input type="date" @bind="exportStartDate" class="form-input" />
+                </div>
+
+                <div class="form-group">
+                    <label>End Date</label>
+                    <input type="date" @bind="exportEndDate" class="form-input" />
+                </div>
+
+                <button class="btn btn-secondary mb-3" @onclick="LoadExportPreview" disabled="@isLoadingPreview">
+                    @if (isLoadingPreview)
+                    {
+                        <span class="spinner"></span>
+                    }
+                    Load Preview
+                </button>
+
+                @if (showExportPreview)
+                {
+                    <div class="export-preview">
+                        <h4>Preview (@previewEntries.Count entries)</h4>
+
+                        @if (previewEntries.Any())
+                        {
+                            <div class="preview-list">
+                                @foreach (var entry in previewEntries.Take(5))
+                                {
+                                    <div class="preview-entry">
+                                        <div class="preview-date">@entry.Date.ToString("MMM d, yyyy")</div>
+                                        <div class="preview-title">@(string.IsNullOrEmpty(entry.Title) ? "Untitled" : entry.Title)</div>
+                                        <div class="preview-meta">
+                                            <span class="badge">@entry.PrimaryMood</span>
+                                            <span class="preview-words">@entry.WordCount words</span>
+                                        </div>
+                                    </div>
+                                }
+                                @if (previewEntries.Count > 5)
+                                {
+                                    <p class="text-muted">... and @(previewEntries.Count - 5) more entries</p>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted">No entries found in this date range.</p>
+                        }
+                    </div>
+                }
+            </div>
+
+            <div class="modal-footer">
+                <button class="btn btn-outline" @onclick="CloseExportModal">Cancel</button>
+                <button class="btn btn-primary" @onclick="ExportPdf" disabled="@(!previewEntries.Any() || isExporting)">
+                    @if (isExporting)
+                    {
+                        <span class="spinner"></span>
+                    }
+                    Export HTML/PDF
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+  
+
+   
+</style>
+
 @code {
     private AnalyticsData? analytics;
     private DateTime? startDate;
     private DateTime? endDate;
     private string message = "";
     private bool isError = false;
+
+    // Export modal state
+    private bool showExportModal = false;
+    private DateTime exportStartDate = DateTime.Today.AddDays(-30);
+    private DateTime exportEndDate = DateTime.Today;
+    private List<JournalEntry> previewEntries = new();
+    private bool showExportPreview = false;
+    private bool isLoadingPreview = false;
+    private bool isExporting = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -206,27 +297,87 @@
         await LoadAnalytics();
     }
 
+    private void ShowExportModal()
+    {
+        showExportModal = true;
+        showExportPreview = false;
+        previewEntries.Clear();
+
+        // Set default export dates based on current analytics filter
+        exportStartDate = startDate ?? DateTime.Today.AddDays(-30);
+        exportEndDate = endDate ?? DateTime.Today;
+    }
+
+    private void CloseExportModal()
+    {
+        showExportModal = false;
+        showExportPreview = false;
+        previewEntries.Clear();
+    }
+
+    private async Task LoadExportPreview()
+    {
+        if (exportStartDate > exportEndDate)
+        {
+            await JS.InvokeVoidAsync("alert", "Start date must be before end date.");
+            return;
+        }
+
+        isLoadingPreview = true;
+        try
+        {
+            previewEntries = await ExportService.GetEntriesForExportAsync(exportStartDate, exportEndDate);
+            showExportPreview = true;
+
+            if (!previewEntries.Any())
+            {
+                await JS.InvokeVoidAsync("alert", "No entries found in this date range.");
+            }
+        }
+        catch (Exception ex)
+        {
+            await JS.InvokeVoidAsync("alert", $"Error loading preview: {ex.Message}");
+        }
+        finally
+        {
+            isLoadingPreview = false;
+        }
+    }
+
     private async Task ExportPdf()
     {
+        if (!previewEntries.Any())
+        {
+            await JS.InvokeVoidAsync("alert", "No entries to export.");
+            return;
+        }
+
+        isExporting = true;
         message = "";
         isError = false;
 
         try
         {
-            var start = startDate ?? DateTime.Today.AddMonths(-1);
-            var end = endDate ?? DateTime.Today;
+            var html = await ExportService.GenerateHtmlForDownloadAsync(exportStartDate, exportEndDate);
+            var fileName = $"Journal_{exportStartDate:yyyy-MM-dd}_to_{exportEndDate:yyyy-MM-dd}.html";
 
-            var filePath = await ExportService.ExportToHtmlAsync(start, end);
+            // Download the file
+            await JS.InvokeVoidAsync("downloadFile", fileName, html);
 
-            message = $"PDF exported successfully to: {filePath}";
+            message = $"Export successful! File saved as {fileName}";
+            CloseExportModal();
 
-            // Open the file
-            await JS.InvokeVoidAsync("alert", $"PDF exported to: {filePath}");
+            await JS.InvokeVoidAsync("alert", "Export successful! The file has been downloaded. You can open it and print to PDF using your browser.");
         }
         catch (Exception ex)
         {
-            message = $"Error exporting PDF: {ex.Message}";
+            message = $"Error exporting: {ex.Message}";
             isError = true;
+            await JS.InvokeVoidAsync("alert", $"Error exporting: {ex.Message}");
+        }
+        finally
+        {
+            isExporting = false;
         }
     }
 }
