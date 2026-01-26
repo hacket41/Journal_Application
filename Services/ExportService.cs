@@ -1,5 +1,4 @@
 ﻿using Journal.Models;
-using Journal.Services;
 using System.Text;
 
 namespace Journal.Services;
@@ -13,20 +12,29 @@ public class ExportService
         _journalService = journalService;
     }
 
-    public async Task<string> ExportToHtmlAsync(DateTime startDate, DateTime endDate)
+    public async Task<List<JournalEntry>> GetEntriesForExportAsync(DateTime startDate, DateTime endDate)
     {
-        var htmlPath = await ExportToHtmlAsync(startDate, endDate);
-
-        var pdfFileName = $"Journal_{startDate:yyyy-MM-dd}_to_{endDate:yyyy-MM-dd}.pdf";
-        var pdfPath = Path.Combine(FileSystem.AppDataDirectory, pdfFileName);
-
-        // PLACEHOLDER: convert HTML → PDF
-        // You will replace this with a real PDF library
-        File.Copy(htmlPath, pdfPath, overwrite: true);
-
-        return pdfPath;
+        return await _journalService.GetEntriesInRangeAsync(startDate, endDate);
     }
 
+    public async Task<string> GenerateHtmlForDownloadAsync(DateTime startDate, DateTime endDate)
+    {
+        var entries = await _journalService.GetEntriesInRangeAsync(startDate, endDate);
+        return GenerateHtml(entries, startDate, endDate);
+    }
+
+    public async Task<string> ExportToPdfAsync(DateTime startDate, DateTime endDate, string destinationPath)
+    {
+        var entries = await _journalService.GetEntriesInRangeAsync(startDate, endDate);
+        var html = GenerateHtml(entries, startDate, endDate);
+
+        var fileName = $"Journal_{startDate:yyyy-MM-dd}_to_{endDate:yyyy-MM-dd}.html";
+        var filePath = Path.Combine(destinationPath, fileName);
+
+        await File.WriteAllTextAsync(filePath, html);
+
+        return filePath;
+    }
 
     private string GenerateHtml(List<JournalEntry> entries, DateTime startDate, DateTime endDate)
     {
@@ -105,6 +113,7 @@ public class ExportService
         .content {
             margin: 15px 0;
             line-height: 1.6;
+            white-space: pre-wrap;
         }
         .metadata {
             font-size: 12px;
@@ -180,7 +189,8 @@ public class ExportService
                 }
 
                 // Content
-                sb.AppendLine($"        <div class='content'>{entry.Content}</div>");
+                var encodedContent = System.Net.WebUtility.HtmlEncode(entry.Content);
+                sb.AppendLine($"        <div class='content'>{encodedContent}</div>");
 
                 // Metadata
                 sb.AppendLine($"        <div class='metadata'>Words: {entry.WordCount} | Created: {entry.CreatedAt:g}</div>");
