@@ -198,12 +198,12 @@
                     <input type="date" @bind="exportStartDate" class="form-input" />
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" style="margin-top:10px">
                     <label>End Date</label>
                     <input type="date" @bind="exportEndDate" class="form-input" />
                 </div>
 
-                <button class="btn btn-secondary mb-3" @onclick="LoadExportPreview" disabled="@isLoadingPreview">
+                <button class="btn btn-secondary" style="margin-top:20px" @onclick="LoadExportPreview" disabled="@isLoadingPreview">
                     @if (isLoadingPreview)
                     {
                         <span class="spinner"></span>
@@ -258,11 +258,7 @@
     </div>
 }
 
-<style>
-  
 
-   
-</style>
 
 @code {
     private AnalyticsData? analytics;
