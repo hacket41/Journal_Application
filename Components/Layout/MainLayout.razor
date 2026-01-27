@@ -48,12 +48,11 @@
                 <span>Analytics</span>
             </NavLink>
 
-            <!-- THEME TOGGLE -->
+            <!-- theme toggle -->
             <NavLink href="#" class="nav-link" @onclick="ToggleTheme">
                 @if (IsDarkMode)
                 {
-                    <!-- Sun SVG for Light -->
-                    <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
                         <circle cx="12" cy="12" r="5"></circle>
                         <line x1="12" y1="1" x2="12" y2="3"></line>
                         <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -63,7 +62,6 @@
                 }
                 else
                 {
-                    <!-- Moon SVG for Dark -->
                     <svg width="20" height="20" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="2">
                         <path d="M21 12.79A9 9 0 0 1 11.21 3 7 7 0 0 0 12 21a9 9 0 0 1 9-8.21z"></path>
                     </svg>
@@ -84,7 +82,7 @@
     {
         if (firstRender)
         {
-            // Check if the page is in dark mode by reading the root class
+            // Checks if the page is in dark mode by reading the root class
             var rootClass = await JS.InvokeAsync<string>("eval", "document.documentElement.className");
             IsDarkMode = rootClass.Contains("dark");
             StateHasChanged();
@@ -96,7 +94,7 @@
         IsDarkMode = !IsDarkMode;
         var theme = IsDarkMode ? "dark" : "light";
 
-        // Call JS to switch theme
+        //Applies theme by calling JS function
         await JS.InvokeVoidAsync("applyTheme", theme);
     }
 }

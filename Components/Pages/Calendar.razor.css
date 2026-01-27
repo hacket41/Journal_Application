@@ -1,6 +1,3 @@
-/* -------------------------------
-   Variables for Light & Dark Theme
----------------------------------*/
 :root {
     --bg-primary: #ffffff;
     --bg-secondary: #f9fafb;
@@ -44,9 +41,9 @@ body.dark {
     --bg-tertiary: #1e293b;
 }
 
-/* -------------------------------
+/*
    Calendar Container
----------------------------------*/
+*/
 .calendar-container {
     max-width: 1000px;
     margin: 2rem auto;
@@ -190,7 +187,7 @@ body.dark {
 
 /* Tags */
 .preview-tags .tag {
-    background: #37415133; /* semi-transparent dark for dark mode */
+    background: #37415133;
     color: var(--text-primary);
     padding: 0.25rem 0.6rem;
     border-radius: 999px;

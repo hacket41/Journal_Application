@@ -5,7 +5,7 @@
 @inject IJSRuntime JS
 
 <PageTitle>Timeline - My Journal</PageTitle>
-
+<!-- Check if authenticated or not -->
 @if (!AuthService.IsAuthenticated)
 {
     Navigation.NavigateTo("/login");

@@ -101,7 +101,7 @@ public class AnalyticsService
         if (!entryDates.Any())
             return streakInfo;
 
-        // Calculate current streak
+        // Calculates current streak for analytics 
         var today = DateTime.Today;
         var currentStreak = 0;
         var checkDate = today;
@@ -121,7 +121,7 @@ public class AnalyticsService
 
         streakInfo.CurrentStreak = currentStreak;
 
-        // Calculate longest streak
+        // Calculates longest streak
         var longestStreak = 0;
         var tempStreak = 1;
 

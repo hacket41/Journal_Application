@@ -2,6 +2,7 @@
 using System.Text;
 
 namespace Journal.Services;
+//class for date range pdf export for journal entries
 
 public class ExportService
 {
