@@ -2,6 +2,7 @@
 
 namespace Journal.Services;
 
+//dashboard analytics service for journal entries
 public class AnalyticsService
 {
     private readonly JournalService _journalService;

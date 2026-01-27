@@ -105,3 +105,37 @@
     ::deep .theme-btn:hover svg {
         stroke: var(--accent-hover);
     }
+
+.nav-link[type="button"],
+button.nav-link {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6366f1; /* Purplish-blue color in light mode */
+    padding: 0.5rem 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+    .nav-link[type="button"]:hover,
+    button.nav-link:hover {
+        background-color: rgba(99, 102, 241, 0.1); /* Light purplish-blue hover */
+    }
+
+/* Dark mode - white/light color */
+.dark .nav-link[type="button"],
+.dark button.nav-link {
+    color: #e0e7ff; /* Light color for dark mode */
+}
+
+    .dark .nav-link[type="button"]:hover,
+    .dark button.nav-link:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+/* Ensure SVG inherits color */
+.nav-link svg {
+    stroke: currentColor;
+}

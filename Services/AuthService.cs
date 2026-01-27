@@ -3,6 +3,7 @@ using System.Text;
 
 namespace Journal.Services;
 
+//designated class for password protection
 public class AuthService
 {
     private readonly DatabaseService _database;

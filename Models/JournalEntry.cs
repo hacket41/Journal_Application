@@ -1,5 +1,6 @@
 ﻿namespace Journal.Models;
 
+//Model class for journal entries
 public class JournalEntry
 {
     public int Id { get; set; }

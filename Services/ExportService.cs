@@ -201,7 +201,7 @@ public class ExportService
                     sb.AppendLine("        </div>");
                 }
 
-                // Content - DO NOT encode, render as HTML
+             
                 sb.AppendLine($"        <div class='content'>{entry.Content}</div>");
 
                 // Metadata
