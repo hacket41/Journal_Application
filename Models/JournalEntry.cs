@@ -10,7 +10,7 @@ public class JournalEntry
     public string? SecondaryMood1 { get; set; }
     public string? SecondaryMood2 { get; set; }
     public string? Category { get; set; }
-    public string Tags { get; set; } = string.Empty; // Comma-separated
+    public string Tags { get; set; } = string.Empty; 
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     public int WordCount { get; set; }
