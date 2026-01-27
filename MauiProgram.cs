@@ -29,7 +29,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddSingleton<AnalyticsService>();
         builder.Services.AddSingleton<ExportService>();
-        builder.Services.AddSingleton<ThemeService>();
+       
+
 
         return builder.Build();
 

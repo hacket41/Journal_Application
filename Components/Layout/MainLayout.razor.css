@@ -1,10 +1,12 @@
+/* Navbar - Dark Theme Compatible */
 ::deep .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 0.75rem 2rem;
-    background: #ffffff;
-    border-bottom: 1px solid #e5e7eb;
+    background: var(--bg-secondary);
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 ::deep .nav-title {
@@ -13,12 +15,14 @@
     gap: 0.6rem;
     font-size: 1.25rem;
     font-weight: 700;
-    color: #111827;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
 }
 
 ::deep .logo-icon {
-    color: #6366f1;
-    stroke: #6366f1;
+    color: var(--accent-primary);
+    stroke: var(--accent-primary);
+    transition: color 0.3s ease, stroke 0.3s ease;
 }
 
 ::deep .nav-right {
@@ -36,7 +40,7 @@
     font-size: 0.9rem;
     font-weight: 500;
     text-decoration: none;
-    color: #6b7280;
+    color: var(--text-secondary);
     background: transparent;
     border: 1px solid transparent;
     transition: all 0.2s ease;
@@ -45,30 +49,30 @@
     ::deep a.nav-link svg {
         width: 18px;
         height: 18px;
-        stroke: #6366f1;
+        stroke: var(--accent-primary);
         fill: none;
         transition: stroke 0.2s ease;
     }
 
     ::deep a.nav-link:hover {
-        background: #f3f4f6;
-        color: #111827;
-        border-color: #e5e7eb;
+        background: var(--hover-bg);
+        color: var(--text-primary);
+        border-color: var(--border-color);
     }
 
         ::deep a.nav-link:hover svg {
-            stroke: #818cf8;
+            stroke: var(--accent-hover);
         }
 
     ::deep a.nav-link.active {
-        background: #eef2ff;
-        color: #6366f1;
-        border-color: #c7d2fe;
+        background: var(--calendar-highlight);
+        color: var(--accent-primary);
+        border-color: var(--accent-primary);
         font-weight: 600;
     }
 
         ::deep a.nav-link.active svg {
-            stroke: #6366f1;
+            stroke: var(--accent-primary);
         }
 
 ::deep .theme-btn {
@@ -77,7 +81,7 @@
     border-radius: 9999px;
     border: 1px solid transparent;
     background: transparent;
-    color: #6b7280;
+    color: var(--text-secondary);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -86,18 +90,18 @@
 }
 
     ::deep .theme-btn:hover {
-        background: #f3f4f6;
-        color: #111827;
+        background: var(--hover-bg);
+        color: var(--text-primary);
     }
 
     ::deep .theme-btn svg {
         width: 18px;
         height: 18px;
-        stroke: #6366f1;
+        stroke: var(--accent-primary);
         fill: none;
         transition: stroke 0.2s ease;
     }
 
     ::deep .theme-btn:hover svg {
-        stroke: #818cf8;
+        stroke: var(--accent-hover);
     }
