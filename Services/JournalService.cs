@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 namespace Journal.Services;
 
 
-//Appends journal entries in SQLITE database
+//Appends journal entries in SQLITE database:q
 public class JournalService
 {
     private readonly DatabaseService _database;

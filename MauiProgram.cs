@@ -31,7 +31,6 @@ public static class MauiProgram
         builder.Services.AddSingleton<ExportService>();
        
 
-
         return builder.Build();
 
 
