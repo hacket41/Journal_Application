@@ -1,7 +1,3 @@
-/* ============================================ */
-/* THEME VARIABLES */
-/* ============================================ */
-/* Light theme (default) */
 :root {
     --bg-primary: #f5f3f7;
     --bg-secondary: #ffffff;
@@ -105,9 +101,7 @@
         --calendar-hover-bg: #404057;
     }
 
-/* ============================================ */
-/* GLOBAL STYLES */
-/* ============================================ */
+
 * {
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 }
@@ -276,9 +270,7 @@ hr {
     border-color: var(--border-color);
 }
 
-/* ============================================ */
-/* COMPONENT-SPECIFIC DARK THEME FIXES */
-/* ============================================ */
+
 
 /* Analytics Page */
 .date-filter {
@@ -570,9 +562,6 @@ hr {
     border-top-color: var(--accent-primary);
 }
 
-/* ============================================ */
-/* RESPONSIVE */
-/* ============================================ */
 @media (max-width: 768px) {
     .modal-content {
         width: 95%;
